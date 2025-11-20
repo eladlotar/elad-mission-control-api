@@ -1,4 +1,4 @@
-// ELAD CRM – API בסיסי עם תפקידים ומודולים
+// ELAD CRM – API מלא עם תפקידים, לקוחות, אימונים, משימות ותשלומים
 // "מסד נתונים" בקובץ db.json – בלי DB חיצוני
 
 const express = require('express');
@@ -135,7 +135,7 @@ app.get('/', (req, res) => {
   res.send('ELAD CRM API עובד');
 });
 
-// מגיש את ה-UI (כשנוסיף public/index.html)
+// מגיש את ה-UI
 app.use('/app', express.static(PUBLIC_DIR));
 
 // ===================== AUTH – התחברות, מי אני =====================
@@ -187,6 +187,434 @@ app.post('/api/login', (req, res) => {
 app.get('/api/me', authenticate, (req, res) => {
   res.json({ user: req.user });
 });
+
+// ===================== USERS – ניהול משתמשים =====================
+
+// רשימת משתמשים – רק אדמין/מנהל
+app.get(
+  '/api/users',
+  authenticate,
+  authorizeRoles('ADMIN', 'MANAGER'),
+  (req, res) => {
+    const db = loadDb();
+    const users = db.users.map(u => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role
+    }));
+    res.json(users);
+  }
+);
+
+// יצירת משתמש – רק אדמין
+app.post(
+  '/api/users',
+  authenticate,
+  authorizeRoles('ADMIN'),
+  (req, res) => {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password || !role) {
+      return res
+        .status(400)
+        .json({ message: 'חסר שדה חובה (name / email / password / role)' });
+    }
+
+    const allowedRoles = [
+      'ADMIN',
+      'MANAGER',
+      'SALES',
+      'MARKETING',
+      'INSTRUCTOR',
+      'ACCOUNTANT'
+    ];
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: 'role לא תקין' });
+    }
+
+    const db = loadDb();
+
+    const existing = db.users.find(u => u.email === email);
+    if (existing) {
+      return res
+        .status(409)
+        .json({ message: 'כבר קיים משתמש עם האימייל הזה' });
+    }
+
+    const hashed = bcrypt.hashSync(password, 10);
+    const newUser = {
+      id: db.nextUserId++,
+      name,
+      email,
+      passwordHash: hashed,
+      role
+    };
+
+    db.users.push(newUser);
+    saveDb(db);
+
+    res.status(201).json({
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role
+    });
+  }
+);
+
+// ===================== CUSTOMERS – לקוחות / לידים =====================
+
+// רשימת לקוחות
+app.get('/api/customers', authenticate, (req, res) => {
+  const { q, status, assignedTo } = req.query;
+  const db = loadDb();
+  let customers = db.customers;
+
+  if (q) {
+    const term = q.toLowerCase();
+    customers = customers.filter(
+      c =>
+        (c.name && c.name.toLowerCase().includes(term)) ||
+        (c.phone && c.phone.includes(term)) ||
+        (c.email && c.email.toLowerCase().includes(term))
+    );
+  }
+
+  if (status) {
+    customers = customers.filter(c => c.status === status);
+  }
+
+  if (assignedTo === 'me') {
+    customers = customers.filter(
+      c => c.assignedToUserId === req.user.id
+    );
+  } else if (assignedTo) {
+    const idNum = Number(assignedTo);
+    customers = customers.filter(c => c.assignedToUserId === idNum);
+  }
+
+  res.json(customers);
+});
+
+// יצירת לקוח / ליד
+app.post('/api/customers', authenticate, (req, res) => {
+  const { name, phone, email, source, status, notes, assignedToUserId } =
+    req.body;
+
+  if (!name || !phone) {
+    return res
+      .status(400)
+      .json({ message: 'חובה שם וטלפון' });
+  }
+
+  const db = loadDb();
+
+  const newCustomer = {
+    id: db.nextCustomerId++,
+    name,
+    phone,
+    email: email || '',
+    source: source || '',
+    status: status || 'LEAD', // LEAD / ACTIVE / INACTIVE
+    notes: notes || '',
+    assignedToUserId: assignedToUserId || null,
+    createdAt: new Date().toISOString()
+  };
+
+  db.customers.push(newCustomer);
+  saveDb(db);
+
+  res.status(201).json(newCustomer);
+});
+
+// עדכון לקוח
+app.put('/api/customers/:id', authenticate, (req, res) => {
+  const id = Number(req.params.id);
+  const db = loadDb();
+  const customer = db.customers.find(c => c.id === id);
+
+  if (!customer) {
+    return res.status(404).json({ message: 'לקוח לא נמצא' });
+  }
+
+  const {
+    name,
+    phone,
+    email,
+    source,
+    status,
+    notes,
+    assignedToUserId
+  } = req.body;
+
+  if (name !== undefined) customer.name = name;
+  if (phone !== undefined) customer.phone = phone;
+  if (email !== undefined) customer.email = email;
+  if (source !== undefined) customer.source = source;
+  if (status !== undefined) customer.status = status;
+  if (notes !== undefined) customer.notes = notes;
+  if (assignedToUserId !== undefined)
+    customer.assignedToUserId = assignedToUserId;
+
+  saveDb(db);
+  res.json(customer);
+});
+
+// ===================== TRAININGS – אימונים / קורסים =====================
+
+// רשימת אימונים
+app.get('/api/trainings', authenticate, (req, res) => {
+  const { customerId, instructorId } = req.query;
+  const db = loadDb();
+  let trainings = db.trainings;
+
+  if (customerId) {
+    const cid = Number(customerId);
+    trainings = trainings.filter(t => t.customerId === cid);
+  }
+
+  if (instructorId === 'me') {
+    trainings = trainings.filter(
+      t => t.instructorId === req.user.id
+    );
+  } else if (instructorId) {
+    const iid = Number(instructorId);
+    trainings = trainings.filter(t => t.instructorId === iid);
+  }
+
+  res.json(trainings);
+});
+
+// יצירת אימון
+app.post('/api/trainings', authenticate, (req, res) => {
+  const {
+    customerId,
+    date,
+    time,
+    type,
+    instructorId,
+    status,
+    price,
+    location,
+    notes
+  } = req.body;
+
+  if (!customerId || !date || !type) {
+    return res
+      .status(400)
+      .json({ message: 'חובה customerId / date / type' });
+  }
+
+  const db = loadDb();
+  const customer = db.customers.find(
+    c => c.id === Number(customerId)
+  );
+
+  if (!customer) {
+    return res.status(400).json({ message: 'לקוח לא קיים' });
+  }
+
+  const newTraining = {
+    id: db.nextTrainingId++,
+    customerId: Number(customerId),
+    date,
+    time: time || '',
+    type, // INTRO / ADVANCED / GROUP / PRIVATE
+    instructorId: instructorId || null,
+    status: status || 'SCHEDULED', // SCHEDULED / DONE / CANCELED
+    price: price || 0,
+    location: location || '',
+    notes: notes || ''
+  };
+
+  db.trainings.push(newTraining);
+  saveDb(db);
+
+  res.status(201).json(newTraining);
+});
+
+// עדכון אימון
+app.put('/api/trainings/:id', authenticate, (req, res) => {
+  const id = Number(req.params.id);
+  const db = loadDb();
+  const training = db.trainings.find(t => t.id === id);
+
+  if (!training) {
+    return res.status(404).json({ message: 'אימון לא נמצא' });
+  }
+
+  const {
+    date,
+    time,
+    type,
+    instructorId,
+    status,
+    price,
+    location,
+    notes
+  } = req.body;
+
+  if (date !== undefined) training.date = date;
+  if (time !== undefined) training.time = time;
+  if (type !== undefined) training.type = type;
+  if (instructorId !== undefined)
+    training.instructorId = instructorId;
+  if (status !== undefined) training.status = status;
+  if (price !== undefined) training.price = price;
+  if (location !== undefined) training.location = location;
+  if (notes !== undefined) training.notes = notes;
+
+  saveDb(db);
+  res.json(training);
+});
+
+// ===================== TASKS – משימות follow-up =====================
+
+// רשימת משימות
+app.get('/api/tasks', authenticate, (req, res) => {
+  const { status, assignedTo } = req.query;
+  const db = loadDb();
+  let tasks = db.tasks;
+
+  if (status) {
+    tasks = tasks.filter(t => t.status === status);
+  }
+
+  if (assignedTo === 'me') {
+    tasks = tasks.filter(t => t.assignedToUserId === req.user.id);
+  } else if (assignedTo) {
+    const uid = Number(assignedTo);
+    tasks = tasks.filter(t => t.assignedToUserId === uid);
+  }
+
+  res.json(tasks);
+});
+
+// יצירת משימה
+app.post('/api/tasks', authenticate, (req, res) => {
+  const {
+    customerId,
+    assignedToUserId,
+    type,
+    dueDate,
+    status,
+    notes
+  } = req.body;
+
+  if (!customerId || !assignedToUserId || !type) {
+    return res
+      .status(400)
+      .json({ message: 'חובה customerId / assignedToUserId / type' });
+  }
+
+  const db = loadDb();
+  const customer = db.customers.find(
+    c => c.id === Number(customerId)
+  );
+
+  if (!customer) {
+    return res.status(400).json({ message: 'לקוח לא קיים' });
+  }
+
+  const newTask = {
+    id: db.nextTaskId++,
+    customerId: Number(customerId),
+    assignedToUserId: Number(assignedToUserId),
+    type, // CALL / WHATSAPP / EMAIL / MEETING
+    dueDate: dueDate || null,
+    status: status || 'OPEN', // OPEN / DONE
+    notes: notes || ''
+  };
+
+  db.tasks.push(newTask);
+  saveDb(db);
+
+  res.status(201).json(newTask);
+});
+
+// עדכון משימה
+app.put('/api/tasks/:id', authenticate, (req, res) => {
+  const id = Number(req.params.id);
+  const db = loadDb();
+  const task = db.tasks.find(t => t.id === id);
+
+  if (!task) {
+    return res.status(404).json({ message: 'משימה לא נמצאה' });
+  }
+
+  const { dueDate, status, notes } = req.body;
+
+  if (dueDate !== undefined) task.dueDate = dueDate;
+  if (status !== undefined) task.status = status;
+  if (notes !== undefined) task.notes = notes;
+
+  saveDb(db);
+  res.json(task);
+});
+
+// ===================== PAYMENTS – תשלומים =====================
+
+// רשימת תשלומים – אדמין + רו"ח
+app.get(
+  '/api/payments',
+  authenticate,
+  authorizeRoles('ADMIN', 'ACCOUNTANT'),
+  (req, res) => {
+    const db = loadDb();
+    res.json(db.payments);
+  }
+);
+
+// יצירת תשלום – אדמין + רו"ח
+app.post(
+  '/api/payments',
+  authenticate,
+  authorizeRoles('ADMIN', 'ACCOUNTANT'),
+  (req, res) => {
+    const {
+      customerId,
+      amount,
+      currency,
+      date,
+      method,
+      reference,
+      notes
+    } = req.body;
+
+    if (!customerId || !amount) {
+      return res
+        .status(400)
+        .json({ message: 'חובה customerId ו-amount' });
+    }
+
+    const db = loadDb();
+    const customer = db.customers.find(
+      c => c.id === Number(customerId)
+    );
+
+    if (!customer) {
+      return res.status(400).json({ message: 'לקוח לא קיים' });
+    }
+
+    const newPayment = {
+      id: db.nextPaymentId++,
+      customerId: Number(customerId),
+      amount,
+      currency: currency || 'ILS',
+      date: date || new Date().toISOString(),
+      method: method || '',
+      reference: reference || '',
+      notes: notes || ''
+    };
+
+    db.payments.push(newPayment);
+    saveDb(db);
+
+    res.status(201).json(newPayment);
+  }
+);
 
 // ===================== הפעלת השרת =====================
 
