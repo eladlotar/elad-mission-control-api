@@ -3,305 +3,841 @@
 <head>
   <meta charset="UTF-8" />
   <title>ELAD CRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      margin: 0;
-      padding: 0;
+    :root {
+      --blue: #1877f2;
+      --blue-dark: #0f5bb5;
+      --bg: #f3f4f6;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #ef4444;
+      --success: #16a34a;
     }
-    header {
-      background: #020617;
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    /* Layout */
+
+    .login-wrapper {
+      max-width: 380px;
+      margin: 80px auto;
+      padding: 24px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .login-title {
+      font-size: 20px;
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 14px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px rgba(24, 119, 242, 0.2);
+    }
+
+    button {
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-dark);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      background: #e5e7eb;
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      min-height: 16px;
+      margin-top: 4px;
+    }
+
+    .success-msg {
+      color: var(--success);
+      font-size: 13px;
+      min-height: 16px;
+      margin-top: 4px;
+    }
+
+    /* App layout */
+
+    .app-layout {
+      display: none;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #ffffff;
+      border-left: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
       padding: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--blue-dark);
+    }
+
+    .sidebar-user {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0 16px;
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 8px 16px 4px;
+    }
+
+    .nav-item {
+      padding: 8px 16px;
+      font-size: 14px;
+      color: #374151;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #1f2937;
     }
-    .logo {
-      font-weight: bold;
-      font-size: 18px;
+
+    .nav-item span {
+      flex: 1;
     }
-    .role-badge {
+
+    .nav-item:hover {
+      background: #f3f4f6;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      background: #eff6ff;
+      color: var(--blue-dark);
+      font-weight: 600;
+      border-right: 3px solid var(--blue);
+    }
+
+    .nav-item-sub {
+      padding-right: 32px;
+    }
+
+    .sidebar-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #e5e7eb;
       font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #1d4ed8;
+      color: var(--text-muted);
     }
-    main {
-      padding: 16px;
-    }
-    .card {
-      background: #020617;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      border: 1px solid #1f2937;
-    }
-    input, select, button, textarea {
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #4b5563;
-      background: #020617;
-      color: #e5e7eb;
-      margin: 4px 0;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      cursor: pointer;
-      background: #1d4ed8;
-      border: none;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #2563eb;
-    }
-    .tabs {
+
+    .main {
+      flex: 1;
       display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
+      flex-direction: column;
+      min-width: 0;
     }
-    .tab {
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: #111827;
-      cursor: pointer;
-      font-size: 14px;
+
+    .main-header {
+      height: 56px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
     }
-    .tab.active {
-      background: #1d4ed8;
+
+    .main-header-title {
+      font-size: 18px;
+      font-weight: 600;
     }
+
+    .main-header-actions {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    /* Dashboard */
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e5e7eb;
+    }
+
+    .card-title {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1.2fr 1.8fr;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .small-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Tables */
+
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      font-size: 13px;
     }
-    th, td {
-      border-bottom: 1px solid #1f2937;
-      padding: 6px 4px;
+
+    th,
+    td {
       text-align: right;
+      padding: 6px 4px;
+      border-bottom: 1px solid #e5e7eb;
     }
+
     th {
-      background: #020617;
-      font-weight: bold;
-    }
-    .small {
+      background: #f9fafb;
+      color: #4b5563;
+      font-weight: 600;
       font-size: 12px;
-      color: #9ca3af;
     }
-    .two-column {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+
+    tr:hover td {
+      background: #f9fafb;
     }
-    @media (max-width: 800px) {
+
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #eff6ff;
+      color: var(--blue-dark);
+    }
+
+    .status-lead {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-inactive {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .flex {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .flex-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mt-8 {
+      margin-top: 8px;
+    }
+
+    .mt-12 {
+      margin-top: 12px;
+    }
+
+    .mb-8 {
+      margin-bottom: 8px;
+    }
+
+    .mb-4 {
+      margin-bottom: 4px;
+    }
+
+    .input-inline {
+      max-width: 220px;
+    }
+
+    .section-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 900px) {
+      .app-layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        border-left: none;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .main {
+        height: calc(100vh - 140px);
+      }
+
+      .cards-row {
+        grid-template-columns: 1fr;
+      }
+
       .two-column {
         grid-template-columns: 1fr;
       }
     }
-    .error {
-      color: #f87171;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-    .success {
-      color: #4ade80;
-      font-size: 13px;
-      margin-top: 4px;
-    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">ELAD CRM – בית הספר ללחימה</div>
-    <div id="user-info"></div>
-  </header>
-  <main>
-    <div id="login-card" class="card">
-      <h2>התחברות</h2>
-      <label>אימייל:</label>
-      <input type="email" id="login-email" placeholder="admin@crm.local" />
-      <label>סיסמה:</label>
-      <input type="password" id="login-password" placeholder="Admin1234!" />
-      <button id="login-btn">התחבר</button>
-      <div id="login-message" class="error"></div>
+  <!-- מסך לוגין -->
+  <div id="login-wrapper" class="login-wrapper">
+    <div class="login-title">ELAD CRM</div>
+    <div class="login-subtitle">כניסה למערכת הניהול</div>
+    <div>
+      <label for="login-email">אימייל</label>
+      <input
+        type="email"
+        id="login-email"
+        placeholder="admin@crm.local"
+        autocomplete="username"
+      />
     </div>
+    <div>
+      <label for="login-password">סיסמה</label>
+      <input
+        type="password"
+        id="login-password"
+        placeholder="Admin1234!"
+        autocomplete="current-password"
+      />
+    </div>
+    <button id="login-btn" class="btn-primary" style="width: 100%; margin-top: 4px;">
+      התחברות
+    </button>
+    <div id="login-error" class="error-msg"></div>
+  </div>
 
-    <div id="app-card" class="card" style="display:none;">
-      <div class="tabs">
-        <div class="tab active" data-tab="customers">לקוחות</div>
-        <div class="tab" data-tab="tasks">משימות</div>
-        <div class="tab" data-tab="trainings">אימונים</div>
-      </div>
+  <!-- אפליקציה -->
+  <div id="app-layout" class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">ELAD CRM</div>
+      <div id="sidebar-user" class="sidebar-user">לא מחובר</div>
+      <div class="sidebar-nav">
+        <div class="nav-section-title">ראשי</div>
+        <div class="nav-item active" data-section="dashboard">
+          <span>מסך בית</span>
+        </div>
 
-      <!-- טאב לקוחות -->
-      <div id="tab-customers">
-        <h3>לקוחות / לידים</h3>
-        <div class="two-column">
-          <div>
-            <h4>הוספת לקוח</h4>
-            <label>שם מלא:</label>
-            <input id="cust-name" />
-            <label>טלפון:</label>
-            <input id="cust-phone" />
-            <label>אימייל:</label>
-            <input id="cust-email" />
-            <label>סטטוס:</label>
-            <select id="cust-status">
-              <option value="LEAD">ליד</option>
-              <option value="ACTIVE">פעיל</option>
-              <option value="INACTIVE">לא פעיל</option>
-            </select>
-            <label>מקור (פייסבוק/אורגני/המלצה...):</label>
-            <input id="cust-source" />
-            <label>הערות:</label>
-            <textarea id="cust-notes" rows="3"></textarea>
-            <button id="cust-add-btn">שמור לקוח</button>
-            <div id="cust-add-msg" class="small"></div>
-          </div>
-          <div>
-            <h4>חיפוש לקוחות</h4>
-            <label>חיפוש לפי שם / טלפון / מייל:</label>
-            <input id="cust-search" placeholder="הקלד לחיפוש..." />
-            <button id="cust-search-btn">חפש</button>
-            <table>
-              <thead>
-                <tr>
-                  <th>שם</th>
-                  <th>טלפון</th>
-                  <th>סטטוס</th>
-                  <th>מקור</th>
-                </tr>
-              </thead>
-              <tbody id="cust-table-body"></tbody>
-            </table>
-          </div>
+        <div class="nav-section-title">לקוחות</div>
+        <div class="nav-item" data-section="leads">
+          <span>מתעניינים / לידים</span>
+        </div>
+        <div class="nav-item" data-section="customers">
+          <span>לקוחות קיימים</span>
+        </div>
+
+        <div class="nav-section-title">כספים</div>
+        <div class="nav-item" data-section="billing">
+          <span>סליקה (בהכנה)</span>
+        </div>
+        <div class="nav-item nav-item-sub" data-section="income">
+          <span>הנהלת חשבונות – הכנסות</span>
+        </div>
+        <div class="nav-item nav-item-sub" data-section="expenses">
+          <span>הנהלת חשבונות – הוצאות</span>
+        </div>
+        <div class="nav-item nav-item-sub" data-section="payroll">
+          <span>שכר (בהמשך)</span>
+        </div>
+
+        <div class="nav-section-title">תפעול</div>
+        <div class="nav-item" data-section="tasks">
+          <span>משימות</span>
+        </div>
+        <div class="nav-item" data-section="products">
+          <span>מוצרים / מלאי</span>
+        </div>
+        <div class="nav-item" data-section="sales">
+          <span>ניהול מכירות (שיחות)</span>
+        </div>
+        <div class="nav-item" data-section="automations">
+          <span>אוטומציות (וואטסאפ / מייל / SMS)</span>
+        </div>
+
+        <div class="nav-section-title">מערכת</div>
+        <div class="nav-item" data-section="settings">
+          <span>הגדרות והרשאות</span>
         </div>
       </div>
+      <div class="sidebar-footer">
+        גרסה ראשונית – מחשב<br />
+        התאמה לאפליקציה תבוא אחרי זה.
+      </div>
+    </aside>
 
-      <!-- טאב משימות -->
-      <div id="tab-tasks" style="display:none;">
-        <h3>משימות Follow-up</h3>
-        <div class="two-column">
-          <div>
-            <h4>הוספת משימה</h4>
-            <label>ID של לקוח:</label>
-            <input id="task-customer-id" />
-            <label>ID של משתמש אחראי (למשל שלך):</label>
-            <input id="task-assigned-user-id" />
-            <label>סוג משימה:</label>
-            <select id="task-type">
-              <option value="CALL">שיחה</option>
-              <option value="WHATSAPP">ווטסאפ</option>
-              <option value="EMAIL">מייל</option>
-              <option value="MEETING">פגישה</option>
-            </select>
-            <label>תאריך יעד (YYYY-MM-DD):</label>
-            <input id="task-due-date" />
-            <label>הערות:</label>
-            <textarea id="task-notes" rows="3"></textarea>
-            <button id="task-add-btn">שמור משימה</button>
-            <div id="task-add-msg" class="small"></div>
+    <div class="main">
+      <div class="main-header">
+        <div class="main-header-title" id="main-title">מסך בית</div>
+        <div class="main-header-actions" id="main-subtitle"></div>
+      </div>
+      <div class="main-content">
+        <!-- Dashboard -->
+        <div id="section-dashboard">
+          <div class="cards-row">
+            <div class="card">
+              <div class="card-title">לידים חדשים היום</div>
+              <div id="dash-new-leads" class="card-value">0</div>
+              <div class="card-sub" id="dash-new-leads-sub"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">הכנסות החודש (₪)</div>
+              <div id="dash-income" class="card-value">0</div>
+              <div class="card-sub" id="dash-income-sub"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">אחוז המרה (לידים → לקוחות פעילים)</div>
+              <div id="dash-conversion" class="card-value">0%</div>
+              <div class="card-sub" id="dash-conversion-sub"></div>
+            </div>
           </div>
-          <div>
-            <h4>משימות פתוחות שלי</h4>
-            <button id="task-load-mine-btn">טען</button>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>לקוח</th>
-                  <th>סוג</th>
-                  <th>סטטוס</th>
-                </tr>
-              </thead>
-              <tbody id="task-table-body"></tbody>
-            </table>
+
+          <div class="two-column">
+            <div class="card">
+              <div class="section-title">משימות היום</div>
+              <div class="small-text">גרסה ראשונית – משימות בסיסיות בלבד.</div>
+              <div id="dash-tasks-list" class="mt-8 small-text">
+                אין כרגע משימות להצגה.
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-title">לידים חמים (48 שעות אחרונות)</div>
+              <div class="small-text">
+                לידים שנכנסו ב־48 השעות האחרונות ולא הפכו עדיין ללקוחות פעילים.
+              </div>
+              <div id="dash-hot-leads" class="mt-8 small-text">
+                אין כרגע לידים חמים.
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- טאב אימונים -->
-      <div id="tab-trainings" style="display:none;">
-        <h3>אימונים</h3>
-        <div class="two-column">
-          <div>
-            <h4>הוספת אימון</h4>
-            <label>ID של לקוח:</label>
-            <input id="trn-customer-id" />
-            <label>תאריך (YYYY-MM-DD):</label>
-            <input id="trn-date" />
-            <label>שעה:</label>
-            <input id="trn-time" />
-            <label>סוג אימון:</label>
-            <input id="trn-type" placeholder="INTRO / ADVANCED / GROUP..." />
-            <label>ID של מדריך:</label>
-            <input id="trn-instructor-id" />
-            <label>מחיר:</label>
-            <input id="trn-price" />
-            <label>מיקום:</label>
-            <input id="trn-location" />
-            <label>הערות:</label>
-            <textarea id="trn-notes" rows="3"></textarea>
-            <button id="trn-add-btn">שמור אימון</button>
-            <div id="trn-add-msg" class="small"></div>
+        <!-- Leads -->
+        <div id="section-leads" style="display: none;">
+          <div class="flex-between mb-8">
+            <div class="section-title">מתעניינים / לידים</div>
+            <div class="flex">
+              <input
+                id="leads-search"
+                class="input-inline"
+                placeholder="חיפוש לפי שם / טלפון / מייל"
+              />
+              <button id="leads-search-btn" class="btn-ghost">חיפוש</button>
+            </div>
           </div>
-          <div>
-            <h4>אימונים לפי לקוח</h4>
-            <label>ID של לקוח:</label>
-            <input id="trn-search-customer-id" />
-            <button id="trn-search-btn">טען אימונים</button>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>תאריך</th>
-                  <th>סוג</th>
-                  <th>סטטוס</th>
-                </tr>
-              </thead>
-              <tbody id="trn-table-body"></tbody>
-            </table>
+
+          <div class="two-column">
+            <div class="card">
+              <div class="section-title">הוספת ליד חדש</div>
+              <label>שם מלא</label>
+              <input id="lead-name" />
+
+              <label>טלפון</label>
+              <input id="lead-phone" />
+
+              <label>אימייל</label>
+              <input id="lead-email" />
+
+              <label>מקור (קמפיין / המלצה / אורגני)</label>
+              <input id="lead-source" />
+
+              <label>הערות</label>
+              <textarea id="lead-notes" rows="3"></textarea>
+
+              <button id="lead-save-btn" class="btn-primary" style="margin-top: 4px;">
+                שמירת ליד
+              </button>
+              <div id="lead-save-msg" class="section-note"></div>
+            </div>
+
+            <div class="card">
+              <div class="flex-between mb-4">
+                <div class="section-title">לידים פתוחים</div>
+              </div>
+              <div class="section-note">
+                לידים בסטטוס LEAD מתוך המערכת. שינוי סטטוס ללקוח פעיל יעביר אותם
+                למסך "לקוחות קיימים".
+              </div>
+              <div class="mt-8" style="max-height: 380px; overflow-y: auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>שם</th>
+                      <th>טלפון</th>
+                      <th>סטטוס</th>
+                      <th>מקור</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leads-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customers -->
+        <div id="section-customers" style="display: none;">
+          <div class="flex-between mb-8">
+            <div class="section-title">לקוחות קיימים</div>
+            <div class="flex">
+              <input
+                id="customers-search"
+                class="input-inline"
+                placeholder="חיפוש לפי שם / טלפון / מייל"
+              />
+              <button id="customers-search-btn" class="btn-ghost">חיפוש</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-note">
+              לקוחות שהסטטוס שלהם במערכת הוא ACTIVE. ניתן לשנות סטטוס גם דרך API או
+              ניהול ידני בהמשך.
+            </div>
+            <div class="mt-8" style="max-height: 430px; overflow-y: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>שם</th>
+                    <th>טלפון</th>
+                    <th>מייל</th>
+                    <th>סטטוס</th>
+                  </tr>
+                </thead>
+                <tbody id="customers-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- פלייסהולדרים לשאר המסכים -->
+        <div id="section-billing" style="display: none;">
+          <div class="card">
+            <div class="section-title">סליקה – בהכנה</div>
+            <div class="small-text">
+              כאן תופיע בעתיד אפשרות לחיבור חברת סליקה (API), צפייה בחיובים וקישור
+              להכנסות במערכת.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-income" style="display: none;">
+          <div class="card">
+            <div class="section-title">הנהלת חשבונות – הכנסות</div>
+            <div class="small-text">
+              הנתונים נשלפים מ־/api/payments (ADMIN / ACCOUNTANT בלבד). זה ייבנה
+              בהמשך על בסיס המודול הקיים בשרת.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-expenses" style="display: none;">
+          <div class="card">
+            <div class="section-title">הנהלת חשבונות – הוצאות</div>
+            <div class="small-text">
+              כאן תהיה אפשרות להעלות קבצים (חשבוניות / תמונות) לפי חודשים, לשימוש
+              רואה החשבון. זה פלייסהולדר מוכן להמשך פיתוח.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-payroll" style="display: none;">
+          <div class="card">
+            <div class="section-title">שכר – בהמשך</div>
+            <div class="small-text">
+              מודול שכר עם חישוב גלובלי / בסיס / עמלות ושעות ייבנה על גבי הנתונים
+              שכבר סגרנו. כרגע זה מקום שמור.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-tasks" style="display: none;">
+          <div class="card">
+            <div class="section-title">משימות – גרסה בסיסית בהמשך</div>
+            <div class="small-text">
+              משימות יתחברו ל־/api/tasks – לידים, לקוחות, תזכורות follow-up. כרגע
+              זה אזור פלייסהולדר.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-products" style="display: none;">
+          <div class="card">
+            <div class="section-title">מוצרים / מלאי</div>
+            <div class="small-text">
+              כאן יהיה ניהול מלאי, מוצרים, מחירים, ברקודים ודוחות מכירה. אפשר
+              להרחיב בשלב הבא.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-sales" style="display: none;">
+          <div class="card">
+            <div class="section-title">ניהול מכירות (שיחות)</div>
+            <div class="small-text">
+              מסך ייעודי לניהול שיחות מכירה וחיבור למערכות טלפוניה יתווסף בשלב
+              מאוחר יותר.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-automations" style="display: none;">
+          <div class="card">
+            <div class="section-title">אוטומציות</div>
+            <div class="small-text">
+              כאן תופיע תצורת חיבור לאוטומציות (וואטסאפ, מייל, SMS) בשילוב
+              אינטגרציות חיצוניות.
+            </div>
+          </div>
+        </div>
+
+        <div id="section-settings" style="display: none;">
+          <div class="card">
+            <div class="section-title">הגדרות והרשאות</div>
+            <div class="small-text">
+              ניהול משתמשים, הרשאות, מחירים ופרמטרים של המערכת ייכנס לכאן. כרגע
+              זה מסך הכנה.
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </main>
+  </div>
 
   <script>
     const apiBase = ''; // אותו דומיין
-
     let token = null;
     let currentUser = null;
 
-    const loginCard = document.getElementById('login-card');
-    const appCard = document.getElementById('app-card');
-    const userInfo = document.getElementById('user-info');
-
+    const loginWrapper = document.getElementById('login-wrapper');
+    const appLayout = document.getElementById('app-layout');
     const loginEmail = document.getElementById('login-email');
     const loginPassword = document.getElementById('login-password');
     const loginBtn = document.getElementById('login-btn');
-    const loginMsg = document.getElementById('login-message');
+    const loginError = document.getElementById('login-error');
+    const sidebarUser = document.getElementById('sidebar-user');
+    const mainTitle = document.getElementById('main-title');
+    const mainSubtitle = document.getElementById('main-subtitle');
 
-    const tabs = document.querySelectorAll('.tab');
-    const tabCustomers = document.getElementById('tab-customers');
-    const tabTasks = document.getElementById('tab-tasks');
-    const tabTrainings = document.getElementById('tab-trainings');
+    const navItems = document.querySelectorAll('.nav-item');
 
-    function setActiveTab(tabName) {
-      tabs.forEach(t => {
-        t.classList.toggle('active', t.dataset.tab === tabName);
+    const sections = {
+      dashboard: document.getElementById('section-dashboard'),
+      leads: document.getElementById('section-leads'),
+      customers: document.getElementById('section-customers'),
+      billing: document.getElementById('section-billing'),
+      income: document.getElementById('section-income'),
+      expenses: document.getElementById('section-expenses'),
+      payroll: document.getElementById('section-payroll'),
+      tasks: document.getElementById('section-tasks'),
+      products: document.getElementById('section-products'),
+      sales: document.getElementById('section-sales'),
+      automations: document.getElementById('section-automations'),
+      settings: document.getElementById('section-settings'),
+    };
+
+    function showSection(sectionName) {
+      Object.keys(sections).forEach((key) => {
+        sections[key].style.display = key === sectionName ? 'block' : 'none';
       });
-      tabCustomers.style.display = tabName === 'customers' ? 'block' : 'none';
-      tabTasks.style.display = tabName === 'tasks' ? 'block' : 'none';
-      tabTrainings.style.display = tabName === 'trainings' ? 'block' : 'none';
+
+      navItems.forEach((item) => {
+        const sec = item.getAttribute('data-section');
+        if (sec === sectionName) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      switch (sectionName) {
+        case 'dashboard':
+          mainTitle.textContent = 'מסך בית';
+          mainSubtitle.textContent = 'תמונה כללית על העסק';
+          loadDashboard();
+          break;
+        case 'leads':
+          mainTitle.textContent = 'מתעניינים / לידים';
+          mainSubtitle.textContent = '';
+          loadLeads();
+          break;
+        case 'customers':
+          mainTitle.textContent = 'לקוחות קיימים';
+          mainSubtitle.textContent = '';
+          loadCustomers();
+          break;
+        case 'billing':
+          mainTitle.textContent = 'סליקה (בהכנה)';
+          mainSubtitle.textContent = '';
+          break;
+        case 'income':
+          mainTitle.textContent = 'הנהלת חשבונות – הכנסות';
+          mainSubtitle.textContent = '';
+          break;
+        case 'expenses':
+          mainTitle.textContent = 'הנהלת חשבונות – הוצאות';
+          mainSubtitle.textContent = '';
+          break;
+        case 'payroll':
+          mainTitle.textContent = 'שכר';
+          mainSubtitle.textContent = 'מודול שכר מפורט ייבנה בהמשך';
+          break;
+        case 'tasks':
+          mainTitle.textContent = 'משימות';
+          mainSubtitle.textContent = '';
+          break;
+        case 'products':
+          mainTitle.textContent = 'מוצרים / מלאי';
+          mainSubtitle.textContent = '';
+          break;
+        case 'sales':
+          mainTitle.textContent = 'ניהול מכירות (שיחות)';
+          mainSubtitle.textContent = '';
+          break;
+        case 'automations':
+          mainTitle.textContent = 'אוטומציות';
+          mainSubtitle.textContent = '';
+          break;
+        case 'settings':
+          mainTitle.textContent = 'הגדרות והרשאות';
+          mainSubtitle.textContent = '';
+          break;
+      }
     }
 
-    tabs.forEach(t => {
-      t.addEventListener('click', () => {
-        setActiveTab(t.dataset.tab);
+    navItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        const section = item.getAttribute('data-section');
+        showSection(section);
       });
     });
 
@@ -326,8 +862,10 @@
       return res.json();
     }
 
+    // Login
+
     loginBtn.addEventListener('click', async () => {
-      loginMsg.textContent = '';
+      loginError.textContent = '';
       try {
         const data = await api('/api/login', {
           method: 'POST',
@@ -338,202 +876,273 @@
         });
         token = data.token;
         currentUser = data.user;
-        loginCard.style.display = 'none';
-        appCard.style.display = 'block';
-        userInfo.innerHTML =
-          '<div>' +
-          currentUser.name +
-          '</div><div class="role-badge">' +
-          currentUser.role +
-          '</div>';
-        loadCustomers();
+
+        loginWrapper.style.display = 'none';
+        appLayout.style.display = 'flex';
+
+        sidebarUser.textContent =
+          currentUser.name + ' (' + (currentUser.role || '') + ')';
+
+        showSection('dashboard');
       } catch (err) {
-        loginMsg.textContent = err.message;
+        loginError.textContent = err.message;
       }
     });
 
-    // -------- לקוחות --------
+    // Dashboard data
 
-    const custName = document.getElementById('cust-name');
-    const custPhone = document.getElementById('cust-phone');
-    const custEmail = document.getElementById('cust-email');
-    const custStatus = document.getElementById('cust-status');
-    const custSource = document.getElementById('cust-source');
-    const custNotes = document.getElementById('cust-notes');
-    const custAddBtn = document.getElementById('cust-add-btn');
-    const custAddMsg = document.getElementById('cust-add-msg');
-    const custSearch = document.getElementById('cust-search');
-    const custSearchBtn = document.getElementById('cust-search-btn');
-    const custTableBody = document.getElementById('cust-table-body');
+    const dashNewLeadsEl = document.getElementById('dash-new-leads');
+    const dashNewLeadsSubEl = document.getElementById('dash-new-leads-sub');
+    const dashIncomeEl = document.getElementById('dash-income');
+    const dashIncomeSubEl = document.getElementById('dash-income-sub');
+    const dashConversionEl = document.getElementById('dash-conversion');
+    const dashConversionSubEl = document.getElementById('dash-conversion-sub');
+    const dashHotLeadsEl = document.getElementById('dash-hot-leads');
+    const dashTasksListEl = document.getElementById('dash-tasks-list');
 
-    async function loadCustomers(searchTerm = '') {
+    async function loadDashboard() {
       try {
-        const url =
-          '/api/customers' + (searchTerm ? ('?q=' + encodeURIComponent(searchTerm)) : '');
-        const customers = await api(url);
-        custTableBody.innerHTML = '';
-        customers.forEach(c => {
-          const tr = document.createElement('tr');
-          tr.innerHTML =
-            '<td>' + c.name + ' (ID: ' + c.id + ')</td>' +
-            '<td>' + (c.phone || '') + '</td>' +
-            '<td>' + (c.status || '') + '</td>' +
-            '<td>' + (c.source || '') + '</td>';
-          custTableBody.appendChild(tr);
+        const customers = await api('/api/customers');
+        let payments = [];
+        try {
+          payments = await api('/api/payments');
+        } catch (err) {
+          payments = [];
+        }
+
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        const newLeadsToday = customers.filter((c) => {
+          if (c.status !== 'LEAD') return false;
+          if (!c.createdAt) return false;
+          return c.createdAt.startsWith(todayStr);
         });
+
+        dashNewLeadsEl.textContent = newLeadsToday.length;
+        dashNewLeadsSubEl.textContent =
+          newLeadsToday.length > 0
+            ? 'לידים חדשים שנכנסו היום למערכת'
+            : 'אין לידים חדשים שמסומנים להיום';
+
+        const thisMonth = today.getMonth();
+        const thisYear = today.getFullYear();
+        const incomesThisMonth = payments.filter((p) => {
+          if (!p.date) return false;
+          const d = new Date(p.date);
+          return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+        });
+
+        const sumIncome = incomesThisMonth.reduce(
+          (acc, p) => acc + (p.amount || 0),
+          0
+        );
+        dashIncomeEl.textContent = sumIncome.toLocaleString('he-IL', {
+          maximumFractionDigits: 0,
+        });
+        dashIncomeSubEl.textContent =
+          incomesThisMonth.length > 0
+            ? 'מספר עסקאות: ' + incomesThisMonth.length
+            : 'עדיין אין תשלומים חודשיים במערכת';
+
+        const leadsCount = customers.filter((c) => c.status === 'LEAD').length;
+        const activeCount = customers.filter(
+          (c) => c.status === 'ACTIVE'
+        ).length;
+        let conversion = 0;
+        const base = leadsCount + activeCount;
+        if (base > 0) {
+          conversion = Math.round((activeCount / base) * 100);
+        }
+        dashConversionEl.textContent = conversion + '%';
+        dashConversionSubEl.textContent =
+          'מתוך ' +
+          base +
+          ' לידים / לקוחות – ' +
+          activeCount +
+          ' מוגדרים כלקוחות פעילים.';
+
+        const nowMs = today.getTime();
+        const hotLeads = customers.filter((c) => {
+          if (c.status !== 'LEAD') return false;
+          if (!c.createdAt) return false;
+          const d = new Date(c.createdAt);
+          const diffHours = (nowMs - d.getTime()) / (1000 * 60 * 60);
+          return diffHours <= 48;
+        });
+
+        if (hotLeads.length === 0) {
+          dashHotLeadsEl.textContent = 'אין כרגע לידים חמים לפי 48 שעות אחרונות.';
+        } else {
+          dashHotLeadsEl.innerHTML =
+            '<ul style="padding-right: 18px; margin: 0;">' +
+            hotLeads
+              .map((c) => {
+                const phone = c.phone || '';
+                const src = c.source || '';
+                return (
+                  '<li style="margin-bottom: 4px;">' +
+                  (c.name || '(ללא שם)') +
+                  ' – ' +
+                  phone +
+                  (src ? ' (' + src + ')' : '') +
+                  '</li>'
+                );
+              })
+              .join('') +
+            '</ul>';
+        }
+
+        dashTasksListEl.textContent =
+          'חיבור למשימות מתוך /api/tasks יגיע בשלב הבא. כרגע זה דשבורד ללקוחות והכנסות בלבד.';
       } catch (err) {
-        console.error(err);
+        dashNewLeadsSubEl.textContent = 'שגיאה בטעינת נתוני דשבורד.';
       }
     }
 
-    custAddBtn.addEventListener('click', async () => {
-      custAddMsg.textContent = '';
+    // Leads
+
+    const leadsTableBody = document.getElementById('leads-table-body');
+    const leadsSearchInput = document.getElementById('leads-search');
+    const leadsSearchBtn = document.getElementById('leads-search-btn');
+    const leadNameInput = document.getElementById('lead-name');
+    const leadPhoneInput = document.getElementById('lead-phone');
+    const leadEmailInput = document.getElementById('lead-email');
+    const leadSourceInput = document.getElementById('lead-source');
+    const leadNotesInput = document.getElementById('lead-notes');
+    const leadSaveBtn = document.getElementById('lead-save-btn');
+    const leadSaveMsg = document.getElementById('lead-save-msg');
+
+    async function loadLeads(searchTerm) {
       try {
-        const newCust = await api('/api/customers', {
+        let url = '/api/customers?status=LEAD';
+        if (searchTerm) {
+          url += '&q=' + encodeURIComponent(searchTerm);
+        }
+        const leads = await api(url);
+        leadsTableBody.innerHTML = '';
+        if (leads.length === 0) {
+          leadsTableBody.innerHTML =
+            '<tr><td colspan="4" class="small-text">אין לידים להצגה.</td></tr>';
+          return;
+        }
+        leads.forEach((c) => {
+          const tr = document.createElement('tr');
+          const statusClass = 'status-lead';
+          tr.innerHTML =
+            '<td>' +
+            (c.name || '(ללא שם)') +
+            '</td>' +
+            '<td>' +
+            (c.phone || '') +
+            '</td>' +
+            '<td><span class="tag ' +
+            statusClass +
+            '">LEAD</span></td>' +
+            '<td>' +
+            (c.source || '') +
+            '</td>';
+          leadsTableBody.appendChild(tr);
+        });
+      } catch (err) {
+        leadsTableBody.innerHTML =
+          '<tr><td colspan="4" class="small-text">שגיאה בטעינת לידים.</td></tr>';
+      }
+    }
+
+    leadsSearchBtn.addEventListener('click', () => {
+      loadLeads(leadsSearchInput.value);
+    });
+
+    leadSaveBtn.addEventListener('click', async () => {
+      leadSaveMsg.textContent = '';
+      const name = leadNameInput.value.trim();
+      const phone = leadPhoneInput.value.trim();
+      const email = leadEmailInput.value.trim();
+      const source = leadSourceInput.value.trim();
+      const notes = leadNotesInput.value.trim();
+
+      if (!name || !phone) {
+        leadSaveMsg.textContent = 'חובה למלא לפחות שם וטלפון.';
+        return;
+      }
+
+      try {
+        const newLead = await api('/api/customers', {
           method: 'POST',
           body: JSON.stringify({
-            name: custName.value,
-            phone: custPhone.value,
-            email: custEmail.value,
-            status: custStatus.value,
-            source: custSource.value,
-            notes: custNotes.value,
+            name,
+            phone,
+            email,
+            source,
+            notes,
+            status: 'LEAD',
           }),
         });
-        custAddMsg.textContent = 'נשמר (ID: ' + newCust.id + ')';
-        custName.value = '';
-        custPhone.value = '';
-        custEmail.value = '';
-        custSource.value = '';
-        custNotes.value = '';
-        loadCustomers();
+        leadSaveMsg.textContent = 'ליד נשמר בהצלחה (ID: ' + newLead.id + ')';
+        leadNameInput.value = '';
+        leadPhoneInput.value = '';
+        leadEmailInput.value = '';
+        leadSourceInput.value = '';
+        leadNotesInput.value = '';
+        loadLeads();
+        loadDashboard();
       } catch (err) {
-        custAddMsg.textContent = err.message;
+        leadSaveMsg.textContent = err.message;
       }
     });
 
-    custSearchBtn.addEventListener('click', () => {
-      loadCustomers(custSearch.value);
-    });
+    // Customers
 
-    // -------- משימות --------
+    const customersTableBody = document.getElementById('customers-table-body');
+    const customersSearchInput = document.getElementById('customers-search');
+    const customersSearchBtn = document.getElementById('customers-search-btn');
 
-    const taskCustomerId = document.getElementById('task-customer-id');
-    const taskAssignedUserId = document.getElementById('task-assigned-user-id');
-    const taskType = document.getElementById('task-type');
-    const taskDueDate = document.getElementById('task-due-date');
-    const taskNotes = document.getElementById('task-notes');
-    const taskAddBtn = document.getElementById('task-add-btn');
-    const taskAddMsg = document.getElementById('task-add-msg');
-    const taskLoadMineBtn = document.getElementById('task-load-mine-btn');
-    const taskTableBody = document.getElementById('task-table-body');
-
-    taskAddBtn.addEventListener('click', async () => {
-      taskAddMsg.textContent = '';
+    async function loadCustomers(searchTerm) {
       try {
-        const newTask = await api('/api/tasks', {
-          method: 'POST',
-          body: JSON.stringify({
-            customerId: Number(taskCustomerId.value),
-            assignedToUserId: Number(taskAssignedUserId.value),
-            type: taskType.value,
-            dueDate: taskDueDate.value,
-            notes: taskNotes.value,
-          }),
-        });
-        taskAddMsg.textContent = 'נשמר (ID: ' + newTask.id + ')';
-        taskCustomerId.value = '';
-        taskAssignedUserId.value = '';
-        taskDueDate.value = '';
-        taskNotes.value = '';
-      } catch (err) {
-        taskAddMsg.textContent = err.message;
-      }
-    });
-
-    taskLoadMineBtn.addEventListener('click', async () => {
-      try {
-        const tasks = await api('/api/tasks?assignedTo=me');
-        taskTableBody.innerHTML = '';
-        tasks.forEach(t => {
+        let url = '/api/customers?status=ACTIVE';
+        if (searchTerm) {
+          url += '&q=' + encodeURIComponent(searchTerm);
+        }
+        const customers = await api(url);
+        customersTableBody.innerHTML = '';
+        if (customers.length === 0) {
+          customersTableBody.innerHTML =
+            '<tr><td colspan="4" class="small-text">אין לקוחות פעילים להצגה.</td></tr>';
+          return;
+        }
+        customers.forEach((c) => {
+          let statusClass = 'status-active';
+          let statusLabel = c.status || 'ACTIVE';
+          if (c.status === 'INACTIVE') {
+            statusClass = 'status-inactive';
+          }
           const tr = document.createElement('tr');
           tr.innerHTML =
-            '<td>' + t.id + '</td>' +
-            '<td>' + t.customerId + '</td>' +
-            '<td>' + t.type + '</td>' +
-            '<td>' + t.status + '</td>';
-          taskTableBody.appendChild(tr);
+            '<td>' +
+            (c.name || '(ללא שם)') +
+            '</td>' +
+            '<td>' +
+            (c.phone || '') +
+            '</td>' +
+            '<td>' +
+            (c.email || '') +
+            '</td>' +
+            '<td><span class="tag ' +
+            statusClass +
+            '">' +
+            statusLabel +
+            '</span></td>';
+          customersTableBody.appendChild(tr);
         });
       } catch (err) {
-        console.error(err);
+        customersTableBody.innerHTML =
+          '<tr><td colspan="4" class="small-text">שגיאה בטעינת לקוחות.</td></tr>';
       }
-    });
+    }
 
-    // -------- אימונים --------
-
-    const trnCustomerId = document.getElementById('trn-customer-id');
-    const trnDate = document.getElementById('trn-date');
-    const trnTime = document.getElementById('trn-time');
-    const trnType = document.getElementById('trn-type');
-    const trnInstructorId = document.getElementById('trn-instructor-id');
-    const trnPrice = document.getElementById('trn-price');
-    const trnLocation = document.getElementById('trn-location');
-    const trnNotes = document.getElementById('trn-notes');
-    const trnAddBtn = document.getElementById('trn-add-btn');
-    const trnAddMsg = document.getElementById('trn-add-msg');
-
-    const trnSearchCustomerId = document.getElementById('trn-search-customer-id');
-    const trnSearchBtn = document.getElementById('trn-search-btn');
-    const trnTableBody = document.getElementById('trn-table-body');
-
-    trnAddBtn.addEventListener('click', async () => {
-      trnAddMsg.textContent = '';
-      try {
-        const newTrn = await api('/api/trainings', {
-          method: 'POST',
-          body: JSON.stringify({
-            customerId: Number(trnCustomerId.value),
-            date: trnDate.value,
-            time: trnTime.value,
-            type: trnType.value,
-            instructorId: trnInstructorId.value ? Number(trnInstructorId.value) : null,
-            price: trnPrice.value ? Number(trnPrice.value) : 0,
-            location: trnLocation.value,
-            notes: trnNotes.value,
-          }),
-        });
-        trnAddMsg.textContent = 'נשמר (ID: ' + newTrn.id + ')';
-        trnCustomerId.value = '';
-        trnDate.value = '';
-        trnTime.value = '';
-        trnType.value = '';
-        trnInstructorId.value = '';
-        trnPrice.value = '';
-        trnLocation.value = '';
-        trnNotes.value = '';
-      } catch (err) {
-        trnAddMsg.textContent = err.message;
-      }
-    });
-
-    trnSearchBtn.addEventListener('click', async () => {
-      try {
-        const cid = trnSearchCustomerId.value;
-        if (!cid) return;
-        const trainings = await api('/api/trainings?customerId=' + encodeURIComponent(cid));
-        trnTableBody.innerHTML = '';
-        trainings.forEach(t => {
-          const tr = document.createElement('tr');
-          tr.innerHTML =
-            '<td>' + t.id + '</td>' +
-            '<td>' + t.date + '</td>' +
-            '<td>' + t.type + '</td>' +
-            '<td>' + t.status + '</td>';
-          trnTableBody.appendChild(tr);
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    customersSearchBtn.addEventListener('click', () => {
+      loadCustomers(customersSearchInput.value);
     });
   </script>
 </body>
