@@ -983,6 +983,28 @@
     const dashHotLeadsEl = document.getElementById('dash-hot-leads');
     const dashTasksListEl = document.getElementById('dash-tasks-list');
 
+    // Calendar elements
+    
+    const calendarMonthLabel = document.getElementById('calendar-month-label');
+    const calendarGridBody = document.getElementById('calendar-grid-body');
+    const calendarTodayBtn = document.getElementById('calendar-today-btn');
+    const calendarPrevBtn = document.getElementById('calendar-prev-btn');
+    const calendarNextBtn = document.getElementById('calendar-next-btn');
+
+    const calendarEventDateInput = document.getElementById('calendar-event-date');
+    const calendarEventTypeInput = document.getElementById('calendar-event-type');
+    const calendarEventTitleInput = document.getElementById('calendar-event-title');
+    const calendarEventTimeInput = document.getElementById('calendar-event-time');
+    const calendarEventInstructorInput = document.getElementById('calendar-event-instructor');
+    const calendarEventNotesInput = document.getElementById('calendar-event-notes');
+    const calendarAddEventBtn = document.getElementById('calendar-add-event-btn');
+    const calendarAddMsg = document.getElementById('calendar-add-msg');
+
+    // מצב היומן – לעת עתה בזיכרון בלבד
+    let calendarCurrentDate = new Date();
+    let calendarEvents = []; // { date: 'YYYY-MM-DD', type, title, time, instructor }
+
+
     async function loadDashboard() {
       try {
         const customers = await api('/api/customers');
