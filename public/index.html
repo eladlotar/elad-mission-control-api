@@ -511,6 +511,80 @@
               <div id="dash-new-leads" class="card-value">0</div>
               <div class="card-sub" id="dash-new-leads-sub"></div>
             </div>
+            <!-- Calendar -->
+<div id="section-calendar" style="display: none;">
+  <div class="card mb-8">
+    <div class="flex-between mb-4">
+      <div class="section-title">יומן אימונים וקורסים</div>
+      <div class="flex">
+        <button id="calendar-today-btn" class="btn-ghost">היום</button>
+        <button id="calendar-next-btn" class="btn-ghost">›</button>
+        <button id="calendar-prev-btn" class="btn-ghost">‹</button>
+      </div>
+    </div>
+    <div class="flex-between mb-4">
+      <div class="small-text">
+        תצוגת חודש. לכל יום ניתן להוסיף אימון חד־יומי, קורס או אימון פרטי.
+      </div>
+      <div class="pill" id="calendar-month-label">חודש</div>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>ראשון</th>
+            <th>שני</th>
+            <th>שלישי</th>
+            <th>רביעי</th>
+            <th>חמישי</th>
+            <th>שישי</th>
+            <th>שבת</th>
+          </tr>
+        </thead>
+        <tbody id="calendar-grid-body"></tbody>
+      </table>
+    </div>
+    <div class="section-note mt-8">
+      בגרסה הבאה נוסיף לוגיקה אוטומטית לקורסים (מספר מפגשים, פעם בשבוע/שבועיים וכו’) וחיבור ללקוחות.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">הוספת אירוע ליומן</div>
+    <div class="small-text mb-8">
+      כרגע שומר מקומית בדפדפן. בהמשך נחבר לשרת וללקוחות.
+    </div>
+
+    <label>תאריך</label>
+    <input type="date" id="calendar-event-date" />
+
+    <label>סוג אירוע</label>
+    <select id="calendar-event-type">
+      <option value="single">אימון חד־יומי</option>
+      <option value="course">קורס</option>
+      <option value="private">אימון פרטי</option>
+    </select>
+
+    <label>כותרת (למשל: קורס בסיס ערב)</label>
+    <input type="text" id="calendar-event-title" />
+
+    <label>שעות (למשל: 18:00–21:00)</label>
+    <input type="text" id="calendar-event-time" />
+
+    <label>מדריך</label>
+    <input type="text" id="calendar-event-instructor" />
+
+    <label>הערות</label>
+    <textarea id="calendar-event-notes" rows="2"></textarea>
+
+    <button id="calendar-add-event-btn" class="btn-primary" style="margin-top: 8px;">
+      הוספת אירוע ליומן
+    </button>
+    <div id="calendar-add-msg" class="section-note"></div>
+  </div>
+</div>
+
             <div class="card">
               <div class="card-title">הכנסות החודש (₪)</div>
               <div id="dash-income" class="card-value">0</div>
