@@ -863,6 +863,11 @@
           mainSubtitle.textContent = 'תמונה כללית על העסק';
           loadDashboard();
           break;
+        case 'calendar':
+          mainTitle.textContent = 'יומן / לוח שנה';
+          mainSubtitle.textContent = 'ניהול אימונים וקורסים לפי חודש';
+          renderCalendar();
+          break;
         case 'leads':
           mainTitle.textContent = 'מתעניינים / לידים';
           mainSubtitle.textContent = '';
