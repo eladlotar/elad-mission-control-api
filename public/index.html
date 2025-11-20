@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>ELAD CRM</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #020617;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1f2937;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .role-badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #1d4ed8;
+    }
+    main {
+      padding: 16px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #1f2937;
+    }
+    input, select, button, textarea {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      margin: 4px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      cursor: pointer;
+      background: #1d4ed8;
+      border: none;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .tab {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #111827;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .tab.active {
+      background: #1d4ed8;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      border-bottom: 1px solid #1f2937;
+      padding: 6px 4px;
+      text-align: right;
+    }
+    th {
+      background: #020617;
+      font-weight: bold;
+    }
+    .small {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 800px) {
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+    .error {
+      color: #f87171;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .success {
+      color: #4ade80;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">ELAD CRM – בית הספר ללחימה</div>
+    <div id="user-info"></div>
+  </header>
+  <main>
+    <div id="login-card" class="card">
+      <h2>התחברות</h2>
+      <label>אימייל:</label>
+      <input type="email" id="login-email" placeholder="admin@crm.local" />
+      <label>סיסמה:</label>
+      <input type="password" id="login-password" placeholder="Admin1234!" />
+      <button id="login-btn">התחבר</button>
+      <div id="login-message" class="error"></div>
+    </div>
+
+    <div id="app-card" class="card" style="display:none;">
+      <div class="tabs">
+        <div class="tab active" data-tab="customers">לקוחות</div>
+        <div class="tab" data-tab="tasks">משימות</div>
+        <div class="tab" data-tab="trainings">אימונים</div>
+      </div>
+
+      <!-- טאב לקוחות -->
+      <div id="tab-customers">
+        <h3>לקוחות / לידים</h3>
+        <div class="two-column">
+          <div>
+            <h4>הוספת לקוח</h4>
+            <label>שם מלא:</label>
+            <input id="cust-name" />
+            <label>טלפון:</label>
+            <input id="cust-phone" />
+            <label>אימייל:</label>
+            <input id="cust-email" />
+            <label>סטטוס:</label>
+            <select id="cust-status">
+              <option value="LEAD">ליד</option>
+              <option value="ACTIVE">פעיל</option>
+              <option value="INACTIVE">לא פעיל</option>
+            </select>
+            <label>מקור (פייסבוק/אורגני/המלצה...):</label>
+            <input id="cust-source" />
+            <label>הערות:</label>
+            <textarea id="cust-notes" rows="3"></textarea>
+            <button id="cust-add-btn">שמור לקוח</button>
+            <div id="cust-add-msg" class="small"></div>
+          </div>
+          <div>
+            <h4>חיפוש לקוחות</h4>
+            <label>חיפוש לפי שם / טלפון / מייל:</label>
+            <input id="cust-search" placeholder="הקלד לחיפוש..." />
+            <button id="cust-search-btn">חפש</button>
+            <table>
+              <thead>
+                <tr>
+                  <th>שם</th>
+                  <th>טלפון</th>
+                  <th>סטטוס</th>
+                  <th>מקור</th>
+                </tr>
+              </thead>
+              <tbody id="cust-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- טאב משימות -->
+      <div id="tab-tasks" style="display:none;">
+        <h3>משימות Follow-up</h3>
+        <div class="two-column">
+          <div>
+            <h4>הוספת משימה</h4>
+            <label>ID של לקוח:</label>
+            <input id="task-customer-id" />
+            <label>ID של משתמש אחראי (למשל שלך):</label>
+            <input id="task-assigned-user-id" />
+            <label>סוג משימה:</label>
+            <select id="task-type">
+              <option value="CALL">שיחה</option>
+              <option value="WHATSAPP">ווטסאפ</option>
+              <option value="EMAIL">מייל</option>
+              <option value="MEETING">פגישה</option>
+            </select>
+            <label>תאריך יעד (YYYY-MM-DD):</label>
+            <input id="task-due-date" />
+            <label>הערות:</label>
+            <textarea id="task-notes" rows="3"></textarea>
+            <button id="task-add-btn">שמור משימה</button>
+            <div id="task-add-msg" class="small"></div>
+          </div>
+          <div>
+            <h4>משימות פתוחות שלי</h4>
+            <button id="task-load-mine-btn">טען</button>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>לקוח</th>
+                  <th>סוג</th>
+                  <th>סטטוס</th>
+                </tr>
+              </thead>
+              <tbody id="task-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- טאב אימונים -->
+      <div id="tab-trainings" style="display:none;">
+        <h3>אימונים</h3>
+        <div class="two-column">
+          <div>
+            <h4>הוספת אימון</h4>
+            <label>ID של לקוח:</label>
+            <input id="trn-customer-id" />
+            <label>תאריך (YYYY-MM-DD):</label>
+            <input id="trn-date" />
+            <label>שעה:</label>
+            <input id="trn-time" />
+            <label>סוג אימון:</label>
+            <input id="trn-type" placeholder="INTRO / ADVANCED / GROUP..." />
+            <label>ID של מדריך:</label>
+            <input id="trn-instructor-id" />
+            <label>מחיר:</label>
+            <input id="trn-price" />
+            <label>מיקום:</label>
+            <input id="trn-location" />
+            <label>הערות:</label>
+            <textarea id="trn-notes" rows="3"></textarea>
+            <button id="trn-add-btn">שמור אימון</button>
+            <div id="trn-add-msg" class="small"></div>
+          </div>
+          <div>
+            <h4>אימונים לפי לקוח</h4>
+            <label>ID של לקוח:</label>
+            <input id="trn-search-customer-id" />
+            <button id="trn-search-btn">טען אימונים</button>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>תאריך</th>
+                  <th>סוג</th>
+                  <th>סטטוס</th>
+                </tr>
+              </thead>
+              <tbody id="trn-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const apiBase = ''; // אותו דומיין
+
+    let token = null;
+    let currentUser = null;
+
+    const loginCard = document.getElementById('login-card');
+    const appCard = document.getElementById('app-card');
+    const userInfo = document.getElementById('user-info');
+
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    const loginBtn = document.getElementById('login-btn');
+    const loginMsg = document.getElementById('login-message');
+
+    const tabs = document.querySelectorAll('.tab');
+    const tabCustomers = document.getElementById('tab-customers');
+    const tabTasks = document.getElementById('tab-tasks');
+    const tabTrainings = document.getElementById('tab-trainings');
+
+    function setActiveTab(tabName) {
+      tabs.forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tabName);
+      });
+      tabCustomers.style.display = tabName === 'customers' ? 'block' : 'none';
+      tabTasks.style.display = tabName === 'tasks' ? 'block' : 'none';
+      tabTrainings.style.display = tabName === 'trainings' ? 'block' : 'none';
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        setActiveTab(t.dataset.tab);
+      });
+    });
+
+    async function api(path, options = {}) {
+      const headers = options.headers || {};
+      headers['Content-Type'] = 'application/json';
+      if (token) {
+        headers['Authorization'] = 'Bearer ' + token;
+      }
+      const res = await fetch(apiBase + path, {
+        ...options,
+        headers,
+      });
+      if (!res.ok) {
+        let msg = 'שגיאה בשרת';
+        try {
+          const data = await res.json();
+          if (data.message) msg = data.message;
+        } catch (e) {}
+        throw new Error(msg);
+      }
+      return res.json();
+    }
+
+    loginBtn.addEventListener('click', async () => {
+      loginMsg.textContent = '';
+      try {
+        const data = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: loginEmail.value,
+            password: loginPassword.value,
+          }),
+        });
+        token = data.token;
+        currentUser = data.user;
+        loginCard.style.display = 'none';
+        appCard.style.display = 'block';
+        userInfo.innerHTML =
+          '<div>' +
+          currentUser.name +
+          '</div><div class="role-badge">' +
+          currentUser.role +
+          '</div>';
+        loadCustomers();
+      } catch (err) {
+        loginMsg.textContent = err.message;
+      }
+    });
+
+    // -------- לקוחות --------
+
+    const custName = document.getElementById('cust-name');
+    const custPhone = document.getElementById('cust-phone');
+    const custEmail = document.getElementById('cust-email');
+    const custStatus = document.getElementById('cust-status');
+    const custSource = document.getElementById('cust-source');
+    const custNotes = document.getElementById('cust-notes');
+    const custAddBtn = document.getElementById('cust-add-btn');
+    const custAddMsg = document.getElementById('cust-add-msg');
+    const custSearch = document.getElementById('cust-search');
+    const custSearchBtn = document.getElementById('cust-search-btn');
+    const custTableBody = document.getElementById('cust-table-body');
+
+    async function loadCustomers(searchTerm = '') {
+      try {
+        const url =
+          '/api/customers' + (searchTerm ? ('?q=' + encodeURIComponent(searchTerm)) : '');
+        const customers = await api(url);
+        custTableBody.innerHTML = '';
+        customers.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td>' + c.name + ' (ID: ' + c.id + ')</td>' +
+            '<td>' + (c.phone || '') + '</td>' +
+            '<td>' + (c.status || '') + '</td>' +
+            '<td>' + (c.source || '') + '</td>';
+          custTableBody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    custAddBtn.addEventListener('click', async () => {
+      custAddMsg.textContent = '';
+      try {
+        const newCust = await api('/api/customers', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: custName.value,
+            phone: custPhone.value,
+            email: custEmail.value,
+            status: custStatus.value,
+            source: custSource.value,
+            notes: custNotes.value,
+          }),
+        });
+        custAddMsg.textContent = 'נשמר (ID: ' + newCust.id + ')';
+        custName.value = '';
+        custPhone.value = '';
+        custEmail.value = '';
+        custSource.value = '';
+        custNotes.value = '';
+        loadCustomers();
+      } catch (err) {
+        custAddMsg.textContent = err.message;
+      }
+    });
+
+    custSearchBtn.addEventListener('click', () => {
+      loadCustomers(custSearch.value);
+    });
+
+    // -------- משימות --------
+
+    const taskCustomerId = document.getElementById('task-customer-id');
+    const taskAssignedUserId = document.getElementById('task-assigned-user-id');
+    const taskType = document.getElementById('task-type');
+    const taskDueDate = document.getElementById('task-due-date');
+    const taskNotes = document.getElementById('task-notes');
+    const taskAddBtn = document.getElementById('task-add-btn');
+    const taskAddMsg = document.getElementById('task-add-msg');
+    const taskLoadMineBtn = document.getElementById('task-load-mine-btn');
+    const taskTableBody = document.getElementById('task-table-body');
+
+    taskAddBtn.addEventListener('click', async () => {
+      taskAddMsg.textContent = '';
+      try {
+        const newTask = await api('/api/tasks', {
+          method: 'POST',
+          body: JSON.stringify({
+            customerId: Number(taskCustomerId.value),
+            assignedToUserId: Number(taskAssignedUserId.value),
+            type: taskType.value,
+            dueDate: taskDueDate.value,
+            notes: taskNotes.value,
+          }),
+        });
+        taskAddMsg.textContent = 'נשמר (ID: ' + newTask.id + ')';
+        taskCustomerId.value = '';
+        taskAssignedUserId.value = '';
+        taskDueDate.value = '';
+        taskNotes.value = '';
+      } catch (err) {
+        taskAddMsg.textContent = err.message;
+      }
+    });
+
+    taskLoadMineBtn.addEventListener('click', async () => {
+      try {
+        const tasks = await api('/api/tasks?assignedTo=me');
+        taskTableBody.innerHTML = '';
+        tasks.forEach(t => {
+          const tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td>' + t.id + '</td>' +
+            '<td>' + t.customerId + '</td>' +
+            '<td>' + t.type + '</td>' +
+            '<td>' + t.status + '</td>';
+          taskTableBody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    // -------- אימונים --------
+
+    const trnCustomerId = document.getElementById('trn-customer-id');
+    const trnDate = document.getElementById('trn-date');
+    const trnTime = document.getElementById('trn-time');
+    const trnType = document.getElementById('trn-type');
+    const trnInstructorId = document.getElementById('trn-instructor-id');
+    const trnPrice = document.getElementById('trn-price');
+    const trnLocation = document.getElementById('trn-location');
+    const trnNotes = document.getElementById('trn-notes');
+    const trnAddBtn = document.getElementById('trn-add-btn');
+    const trnAddMsg = document.getElementById('trn-add-msg');
+
+    const trnSearchCustomerId = document.getElementById('trn-search-customer-id');
+    const trnSearchBtn = document.getElementById('trn-search-btn');
+    const trnTableBody = document.getElementById('trn-table-body');
+
+    trnAddBtn.addEventListener('click', async () => {
+      trnAddMsg.textContent = '';
+      try {
+        const newTrn = await api('/api/trainings', {
+          method: 'POST',
+          body: JSON.stringify({
+            customerId: Number(trnCustomerId.value),
+            date: trnDate.value,
+            time: trnTime.value,
+            type: trnType.value,
+            instructorId: trnInstructorId.value ? Number(trnInstructorId.value) : null,
+            price: trnPrice.value ? Number(trnPrice.value) : 0,
+            location: trnLocation.value,
+            notes: trnNotes.value,
+          }),
+        });
+        trnAddMsg.textContent = 'נשמר (ID: ' + newTrn.id + ')';
+        trnCustomerId.value = '';
+        trnDate.value = '';
+        trnTime.value = '';
+        trnType.value = '';
+        trnInstructorId.value = '';
+        trnPrice.value = '';
+        trnLocation.value = '';
+        trnNotes.value = '';
+      } catch (err) {
+        trnAddMsg.textContent = err.message;
+      }
+    });
+
+    trnSearchBtn.addEventListener('click', async () => {
+      try {
+        const cid = trnSearchCustomerId.value;
+        if (!cid) return;
+        const trainings = await api('/api/trainings?customerId=' + encodeURIComponent(cid));
+        trnTableBody.innerHTML = '';
+        trainings.forEach(t => {
+          const tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td>' + t.id + '</td>' +
+            '<td>' + t.date + '</td>' +
+            '<td>' + t.type + '</td>' +
+            '<td>' + t.status + '</td>';
+          trnTableBody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
