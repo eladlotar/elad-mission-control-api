@@ -447,8 +447,8 @@
           <span>מסך בית</span>
         </div>
         <div class="nav-item" data-section="calendar">
-  <span>יומן / לוח שנה</span>
-</div>
+          <span>יומן / לוח שנה</span>
+        </div>
 
         <div class="nav-section-title">לקוחות</div>
         <div class="nav-item" data-section="leads">
@@ -502,6 +502,7 @@
         <div class="main-header-title" id="main-title">מסך בית</div>
         <div class="main-header-actions" id="main-subtitle"></div>
       </div>
+
       <div class="main-content">
         <!-- Dashboard -->
         <div id="section-dashboard">
@@ -511,80 +512,6 @@
               <div id="dash-new-leads" class="card-value">0</div>
               <div class="card-sub" id="dash-new-leads-sub"></div>
             </div>
-            <!-- Calendar -->
-<div id="section-calendar" style="display: none;">
-  <div class="card mb-8">
-    <div class="flex-between mb-4">
-      <div class="section-title">יומן אימונים וקורסים</div>
-      <div class="flex">
-        <button id="calendar-today-btn" class="btn-ghost">היום</button>
-        <button id="calendar-next-btn" class="btn-ghost">›</button>
-        <button id="calendar-prev-btn" class="btn-ghost">‹</button>
-      </div>
-    </div>
-    <div class="flex-between mb-4">
-      <div class="small-text">
-        תצוגת חודש. לכל יום ניתן להוסיף אימון חד־יומי, קורס או אימון פרטי.
-      </div>
-      <div class="pill" id="calendar-month-label">חודש</div>
-    </div>
-
-    <div style="overflow-x: auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>ראשון</th>
-            <th>שני</th>
-            <th>שלישי</th>
-            <th>רביעי</th>
-            <th>חמישי</th>
-            <th>שישי</th>
-            <th>שבת</th>
-          </tr>
-        </thead>
-        <tbody id="calendar-grid-body"></tbody>
-      </table>
-    </div>
-    <div class="section-note mt-8">
-      בגרסה הבאה נוסיף לוגיקה אוטומטית לקורסים (מספר מפגשים, פעם בשבוע/שבועיים וכו’) וחיבור ללקוחות.
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-title">הוספת אירוע ליומן</div>
-    <div class="small-text mb-8">
-      כרגע שומר מקומית בדפדפן. בהמשך נחבר לשרת וללקוחות.
-    </div>
-
-    <label>תאריך</label>
-    <input type="date" id="calendar-event-date" />
-
-    <label>סוג אירוע</label>
-    <select id="calendar-event-type">
-      <option value="single">אימון חד־יומי</option>
-      <option value="course">קורס</option>
-      <option value="private">אימון פרטי</option>
-    </select>
-
-    <label>כותרת (למשל: קורס בסיס ערב)</label>
-    <input type="text" id="calendar-event-title" />
-
-    <label>שעות (למשל: 18:00–21:00)</label>
-    <input type="text" id="calendar-event-time" />
-
-    <label>מדריך</label>
-    <input type="text" id="calendar-event-instructor" />
-
-    <label>הערות</label>
-    <textarea id="calendar-event-notes" rows="2"></textarea>
-
-    <button id="calendar-add-event-btn" class="btn-primary" style="margin-top: 8px;">
-      הוספת אירוע ליומן
-    </button>
-    <div id="calendar-add-msg" class="section-note"></div>
-  </div>
-</div>
-
             <div class="card">
               <div class="card-title">הכנסות החודש (₪)</div>
               <div id="dash-income" class="card-value">0</div>
@@ -615,6 +542,80 @@
                 אין כרגע לידים חמים.
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Calendar -->
+        <div id="section-calendar" style="display: none;">
+          <div class="card mb-8">
+            <div class="flex-between mb-4">
+              <div class="section-title">יומן אימונים וקורסים</div>
+              <div class="flex">
+                <button id="calendar-prev-btn" class="btn-ghost">‹</button>
+                <button id="calendar-today-btn" class="btn-ghost">היום</button>
+                <button id="calendar-next-btn" class="btn-ghost">›</button>
+              </div>
+            </div>
+            <div class="flex-between mb-4">
+              <div class="small-text">
+                תצוגת חודש. לכל יום ניתן להוסיף אימון חד־יומי, קורס או אימון פרטי.
+              </div>
+              <div class="pill" id="calendar-month-label">חודש</div>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ראשון</th>
+                    <th>שני</th>
+                    <th>שלישי</th>
+                    <th>רביעי</th>
+                    <th>חמישי</th>
+                    <th>שישי</th>
+                    <th>שבת</th>
+                  </tr>
+                </thead>
+                <tbody id="calendar-grid-body"></tbody>
+              </table>
+            </div>
+            <div class="section-note mt-8">
+              בגרסה הבאה נוסיף לוגיקה אוטומטית לקורסים (מספר מפגשים, פעם בשבוע/שבועיים וכו’) וחיבור ללקוחות.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">הוספת אירוע ליומן</div>
+            <div class="small-text mb-8">
+              כרגע שומר מקומית בדפדפן. בהמשך נחבר לשרת וללקוחות.
+            </div>
+
+            <label>תאריך</label>
+            <input type="date" id="calendar-event-date" />
+
+            <label>סוג אירוע</label>
+            <select id="calendar-event-type">
+              <option value="single">אימון חד־יומי</option>
+              <option value="course">קורס</option>
+              <option value="private">אימון פרטי</option>
+            </select>
+
+            <label>כותרת (למשל: קורס בסיס ערב)</label>
+            <input type="text" id="calendar-event-title" />
+
+            <label>שעות (למשל: 18:00–21:00)</label>
+            <input type="text" id="calendar-event-time" />
+
+            <label>מדריך</label>
+            <input type="text" id="calendar-event-instructor" />
+
+            <label>הערות</label>
+            <textarea id="calendar-event-notes" rows="2"></textarea>
+
+            <button id="calendar-add-event-btn" class="btn-primary" style="margin-top: 8px;">
+              הוספת אירוע ליומן
+            </button>
+            <div id="calendar-add-msg" class="section-note"></div>
           </div>
         </div>
 
@@ -868,178 +869,6 @@
           mainSubtitle.textContent = 'ניהול אימונים וקורסים לפי חודש';
           renderCalendar();
           break;
-              function formatDateKey(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    }
-
-    function renderCalendar() {
-      if (!calendarGridBody) return;
-
-      const year = calendarCurrentDate.getFullYear();
-      const month = calendarCurrentDate.getMonth(); // 0-11
-
-      const monthNames = [
-        'ינואר',
-        'פברואר',
-        'מרץ',
-        'אפריל',
-        'מאי',
-        'יוני',
-        'יולי',
-        'אוגוסט',
-        'ספטמבר',
-        'אוקטובר',
-        'נובמבר',
-        'דצמבר',
-      ];
-      calendarMonthLabel.textContent = monthNames[month] + ' ' + year;
-
-      calendarGridBody.innerHTML = '';
-
-      const firstDay = new Date(year, month, 1);
-      const startWeekday = firstDay.getDay(); // 0=Sunday
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-      // נתחיל מהתא הראשון בלוח – יכול להיות לפני היום הראשון של החודש
-      let dayCounter = 1 - startWeekday;
-
-      for (let week = 0; week < 6; week++) {
-        const tr = document.createElement('tr');
-
-        for (let wd = 0; wd < 7; wd++) {
-          const td = document.createElement('td');
-          td.style.verticalAlign = 'top';
-          td.style.height = '72px';
-
-          const thisDate = new Date(year, month, dayCounter);
-          const thisMonth = thisDate.getMonth();
-
-          if (thisMonth === month) {
-            const dayNumDiv = document.createElement('div');
-            dayNumDiv.textContent = thisDate.getDate();
-            dayNumDiv.style.fontSize = '12px';
-            dayNumDiv.style.fontWeight = '600';
-            dayNumDiv.style.marginBottom = '4px';
-            td.appendChild(dayNumDiv);
-
-            const dateKey = formatDateKey(thisDate);
-            const eventsForDay = calendarEvents.filter(
-              (ev) => ev.date === dateKey
-            );
-
-            eventsForDay.forEach((ev) => {
-              const evDiv = document.createElement('div');
-              evDiv.className = 'pill';
-              evDiv.style.display = 'block';
-              evDiv.style.marginBottom = '2px';
-
-              let typeLabel = '';
-              let bg = '#e5e7eb';
-              let color = '#111827';
-
-              if (ev.type === 'single') {
-                typeLabel = 'חד־יומי';
-                bg = '#fee2e2';
-                color = '#991b1b';
-              } else if (ev.type === 'course') {
-                typeLabel = 'קורס';
-                bg = '#dbeafe';
-                color = '#1d4ed8';
-              } else if (ev.type === 'private') {
-                typeLabel = 'פרטי';
-                bg = '#e0f2fe';
-                color = '#0369a1';
-              }
-
-              evDiv.style.background = bg;
-              evDiv.style.color = color;
-              evDiv.textContent =
-                typeLabel +
-                ' – ' +
-                (ev.title || '') +
-                (ev.time ? ' (' + ev.time + ')' : '');
-              td.appendChild(evDiv);
-            });
-          } else {
-            td.style.background = '#f9fafb';
-          }
-
-          tr.appendChild(td);
-          dayCounter++;
-        }
-
-        calendarGridBody.appendChild(tr);
-      }
-    }
-
-    // ניווט ביומן
-    if (calendarTodayBtn) {
-      calendarTodayBtn.addEventListener('click', () => {
-        calendarCurrentDate = new Date();
-        renderCalendar();
-      });
-      calendarPrevBtn.addEventListener('click', () => {
-        calendarCurrentDate = new Date(
-          calendarCurrentDate.getFullYear(),
-          calendarCurrentDate.getMonth() - 1,
-          1
-        );
-        renderCalendar();
-      });
-      calendarNextBtn.addEventListener('click', () => {
-        calendarCurrentDate = new Date(
-          calendarCurrentDate.getFullYear(),
-          calendarCurrentDate.getMonth() + 1,
-          1
-        );
-        renderCalendar();
-      });
-    }
-
-    // הוספת אירוע בסיסי ליומן
-    if (calendarAddEventBtn) {
-      calendarAddEventBtn.addEventListener('click', () => {
-        calendarAddMsg.textContent = '';
-
-        const dateVal = calendarEventDateInput.value;
-        const typeVal = calendarEventTypeInput.value;
-        const titleVal = calendarEventTitleInput.value.trim();
-        const timeVal = calendarEventTimeInput.value.trim();
-        const instrVal = calendarEventInstructorInput.value.trim();
-        const notesVal = calendarEventNotesInput.value.trim();
-
-        if (!dateVal) {
-          calendarAddMsg.textContent = 'חובה לבחור תאריך.';
-          return;
-        }
-
-        const ev = {
-          date: dateVal,
-          type: typeVal,
-          title: titleVal,
-          time: timeVal,
-          instructor: instrVal,
-          notes: notesVal,
-        };
-        calendarEvents.push(ev);
-        calendarAddMsg.textContent = 'האירוע נוסף ליומן (שמירה מקומית בלבד בשלב זה).';
-
-        // ניקוי שדות (לא תאריך)
-        calendarEventTitleInput.value = '';
-        calendarEventTimeInput.value = '';
-        calendarEventInstructorInput.value = '';
-        calendarEventNotesInput.value = '';
-
-        // הצגה מחדש
-        const d = new Date(dateVal);
-        calendarCurrentDate = new Date(d.getFullYear(), d.getMonth(), 1);
-        renderCalendar();
-      });
-    }
-
         case 'leads':
           mainTitle.textContent = 'מתעניינים / לידים';
           mainSubtitle.textContent = '';
@@ -1154,28 +983,6 @@
     const dashConversionSubEl = document.getElementById('dash-conversion-sub');
     const dashHotLeadsEl = document.getElementById('dash-hot-leads');
     const dashTasksListEl = document.getElementById('dash-tasks-list');
-
-    // Calendar elements
-    
-    const calendarMonthLabel = document.getElementById('calendar-month-label');
-    const calendarGridBody = document.getElementById('calendar-grid-body');
-    const calendarTodayBtn = document.getElementById('calendar-today-btn');
-    const calendarPrevBtn = document.getElementById('calendar-prev-btn');
-    const calendarNextBtn = document.getElementById('calendar-next-btn');
-
-    const calendarEventDateInput = document.getElementById('calendar-event-date');
-    const calendarEventTypeInput = document.getElementById('calendar-event-type');
-    const calendarEventTitleInput = document.getElementById('calendar-event-title');
-    const calendarEventTimeInput = document.getElementById('calendar-event-time');
-    const calendarEventInstructorInput = document.getElementById('calendar-event-instructor');
-    const calendarEventNotesInput = document.getElementById('calendar-event-notes');
-    const calendarAddEventBtn = document.getElementById('calendar-add-event-btn');
-    const calendarAddMsg = document.getElementById('calendar-add-msg');
-
-    // מצב היומן – לעת עתה בזיכרון בלבד
-    let calendarCurrentDate = new Date();
-    let calendarEvents = []; // { date: 'YYYY-MM-DD', type, title, time, instructor }
-
 
     async function loadDashboard() {
       try {
@@ -1421,6 +1228,188 @@
     customersSearchBtn.addEventListener('click', () => {
       loadCustomers(customersSearchInput.value);
     });
+
+    // Calendar elements
+
+    const calendarMonthLabel = document.getElementById('calendar-month-label');
+    const calendarGridBody = document.getElementById('calendar-grid-body');
+    const calendarTodayBtn = document.getElementById('calendar-today-btn');
+    const calendarPrevBtn = document.getElementById('calendar-prev-btn');
+    const calendarNextBtn = document.getElementById('calendar-next-btn');
+
+    const calendarEventDateInput = document.getElementById('calendar-event-date');
+    const calendarEventTypeInput = document.getElementById('calendar-event-type');
+    const calendarEventTitleInput = document.getElementById('calendar-event-title');
+    const calendarEventTimeInput = document.getElementById('calendar-event-time');
+    const calendarEventInstructorInput = document.getElementById('calendar-event-instructor');
+    const calendarEventNotesInput = document.getElementById('calendar-event-notes');
+    const calendarAddEventBtn = document.getElementById('calendar-add-event-btn');
+    const calendarAddMsg = document.getElementById('calendar-add-msg');
+
+    let calendarCurrentDate = new Date();
+    let calendarEvents = []; // { date: 'YYYY-MM-DD', type, title, time, instructor, notes }
+
+    function formatDateKey(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function renderCalendar() {
+      if (!calendarGridBody || !calendarMonthLabel) return;
+
+      const year = calendarCurrentDate.getFullYear();
+      const month = calendarCurrentDate.getMonth(); // 0-11
+
+      const monthNames = [
+        'ינואר','פברואר','מרץ','אפריל','מאי','יוני',
+        'יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'
+      ];
+      calendarMonthLabel.textContent = monthNames[month] + ' ' + year;
+
+      calendarGridBody.innerHTML = '';
+
+      const firstDay = new Date(year, month, 1);
+      const startWeekday = firstDay.getDay(); // 0=Sunday
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      let dayCounter = 1 - startWeekday;
+
+      for (let week = 0; week < 6; week++) {
+        const tr = document.createElement('tr');
+
+        for (let wd = 0; wd < 7; wd++) {
+          const td = document.createElement('td');
+          td.style.verticalAlign = 'top';
+          td.style.height = '72px';
+
+          const thisDate = new Date(year, month, dayCounter);
+          const thisMonth = thisDate.getMonth();
+
+          if (thisMonth === month) {
+            const dayNumDiv = document.createElement('div');
+            dayNumDiv.textContent = thisDate.getDate();
+            dayNumDiv.style.fontSize = '12px';
+            dayNumDiv.style.fontWeight = '600';
+            dayNumDiv.style.marginBottom = '4px';
+            td.appendChild(dayNumDiv);
+
+            const dateKey = formatDateKey(thisDate);
+            const eventsForDay = calendarEvents.filter(
+              (ev) => ev.date === dateKey
+            );
+
+            eventsForDay.forEach((ev) => {
+              const evDiv = document.createElement('div');
+              evDiv.className = 'pill';
+              evDiv.style.display = 'block';
+              evDiv.style.marginBottom = '2px';
+
+              let typeLabel = '';
+              let bg = '#e5e7eb';
+              let color = '#111827';
+
+              if (ev.type === 'single') {
+                typeLabel = 'חד־יומי';
+                bg = '#fee2e2';
+                color = '#991b1b';
+              } else if (ev.type === 'course') {
+                typeLabel = 'קורס';
+                bg = '#dbeafe';
+                color = '#1d4ed8';
+              } else if (ev.type === 'private') {
+                typeLabel = 'פרטי';
+                bg = '#e0f2fe';
+                color = '#0369a1';
+              }
+
+              evDiv.style.background = bg;
+              evDiv.style.color = color;
+              evDiv.textContent =
+                typeLabel +
+                ' – ' +
+                (ev.title || '') +
+                (ev.time ? ' (' + ev.time + ')' : '');
+              td.appendChild(evDiv);
+            });
+          } else {
+            td.style.background = '#f9fafb';
+          }
+
+          tr.appendChild(td);
+          dayCounter++;
+        }
+
+        calendarGridBody.appendChild(tr);
+      }
+    }
+
+    if (calendarTodayBtn) {
+      calendarTodayBtn.addEventListener('click', () => {
+        calendarCurrentDate = new Date();
+        renderCalendar();
+      });
+    }
+    if (calendarPrevBtn) {
+      calendarPrevBtn.addEventListener('click', () => {
+        calendarCurrentDate = new Date(
+          calendarCurrentDate.getFullYear(),
+          calendarCurrentDate.getMonth() - 1,
+          1
+        );
+        renderCalendar();
+      });
+    }
+    if (calendarNextBtn) {
+      calendarNextBtn.addEventListener('click', () => {
+        calendarCurrentDate = new Date(
+          calendarCurrentDate.getFullYear(),
+          calendarCurrentDate.getMonth() + 1,
+          1
+        );
+        renderCalendar();
+      });
+    }
+
+    if (calendarAddEventBtn) {
+      calendarAddEventBtn.addEventListener('click', () => {
+        calendarAddMsg.textContent = '';
+
+        const dateVal = calendarEventDateInput.value;
+        const typeVal = calendarEventTypeInput.value;
+        const titleVal = calendarEventTitleInput.value.trim();
+        const timeVal = calendarEventTimeInput.value.trim();
+        const instrVal = calendarEventInstructorInput.value.trim();
+        const notesVal = calendarEventNotesInput.value.trim();
+
+        if (!dateVal) {
+          calendarAddMsg.textContent = 'חובה לבחור תאריך.';
+          return;
+        }
+
+        const ev = {
+          date: dateVal,
+          type: typeVal,
+          title: titleVal,
+          time: timeVal,
+          instructor: instrVal,
+          notes: notesVal,
+        };
+        calendarEvents.push(ev);
+        calendarAddMsg.textContent =
+          'האירוע נוסף ליומן (שמירה מקומית בלבד בשלב זה).';
+
+        calendarEventTitleInput.value = '';
+        calendarEventTimeInput.value = '';
+        calendarEventInstructorInput.value = '';
+        calendarEventNotesInput.value = '';
+
+        const d = new Date(dateVal);
+        calendarCurrentDate = new Date(d.getFullYear(), d.getMonth(), 1);
+        renderCalendar();
+      });
+    }
   </script>
 </body>
 </html>
