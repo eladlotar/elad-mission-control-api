@@ -2,218 +2,1180 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>ELAD CRM - לוח בקרה ראשי</title>
+  <title>ELAD CRM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root {
+      --blue: #1877f2;
+      --blue-dark: #0f5bb5;
+      --bg: #f3f4f6;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #ef4444;
+      --success: #16a34a;
+      --border: #e5e7eb;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* צד שמאל – תפריט */
+
+    .sidebar {
+      width: 220px;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 12px;
+    }
+
+    .sidebar-header {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding: 0 8px;
+    }
+
+    .nav-group-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin: 12px 8px 4px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #e5e7eb;
+      text-align: right;
+      padding: 8px 10px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .nav-btn span.icon {
+      width: 18px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .nav-btn.active,
+    .nav-btn:hover {
+      background: rgba(24, 119, 242, 0.2);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 11px;
+      color: #6b7280;
+      padding: 0 8px;
+    }
+
+    /* אזור ראשי */
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .top-bar {
+      height: 56px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .top-bar-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0f172a;
+      color: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .pages {
+      padding: 16px 20px 24px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* כפתורים כלליים */
+
+    .primary-btn {
+      background: var(--blue);
+      color: white;
+      border-radius: 999px;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary-btn:hover {
+      background: var(--blue-dark);
+    }
+
+    .secondary-btn {
+      background: #e5e7eb;
+      color: #111827;
+      border-radius: 999px;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .secondary-btn:hover {
+      background: #d1d5db;
+    }
+
+    /* יומן – כמו ARBOX */
+
+    .calendar-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .calendar-shell {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    .calendar-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .calendar-month-label {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .icon-btn {
+      border: none;
+      background: #e5e7eb;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      min-height: 420px;
+    }
+
+    .calendar-day {
+      border-left: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+      padding: 4px 6px;
+      font-size: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .calendar-grid > .calendar-day:nth-child(-n+7) {
+      border-top: none;
+    }
+
+    .calendar-day:nth-child(7n + 1) {
+      border-right: 1px solid var(--border);
+    }
+
+    .calendar-day-number {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .calendar-day-today .calendar-day-number {
+      background: var(--blue);
+      color: white;
+      border-radius: 999px;
+      display: inline-block;
+      padding: 2px 7px;
+    }
+
+    .calendar-day-event {
+      font-size: 11px;
+      padding: 2px 4px;
+      border-radius: 999px;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .calendar-day-event.single {
+      background: rgba(22, 163, 74, 0.12);
+    }
+
+    .calendar-day-event.basic-course {
+      background: rgba(24, 119, 242, 0.12);
+    }
+
+    .calendar-day-event.advanced-course {
+      background: rgba(248, 113, 113, 0.15);
+    }
+
+    /* DRAWER – צד שמאל להוספת אירוע */
+
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.25);
+      display: flex;
+      justify-content: flex-start;
+      z-index: 30;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .event-drawer {
+      width: 360px;
+      max-width: 90vw;
+      background: white;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 25px rgba(15, 23, 42, 0.18);
+      padding: 16px 16px 20px;
+    }
+
+    .drawer-header {
+      margin-bottom: 14px;
+    }
+
+    .drawer-close-btn {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .drawer-steps {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .drawer-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .drawer-step .circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      background: #f9fafb;
+    }
+
+    .drawer-step.active .circle {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .drawer-step.active span {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 8px;
+    }
+
+    .drawer-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .drawer-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0 0 14px;
+    }
+
+    .drawer-label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .drawer-input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      font-family: inherit;
+    }
+
+    textarea.drawer-input {
+      resize: vertical;
+    }
+
+    .event-type-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .event-type-card {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: right;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+
+    .event-type-card.selected {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px rgba(24, 119, 242, 0.4);
+      background: #eff6ff;
+    }
+
+    .event-type-main {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .event-type-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .time-range {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .time-range span {
+      font-size: 14px;
+    }
+
+    .frequency-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .radio-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .radio-pill input {
+      accent-color: var(--blue);
+    }
+
+    .weekly-options {
+      margin-bottom: 10px;
+    }
+
+    .weekday-pills {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .weekday-pill {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #f9fafb;
+    }
+
+    .weekday-pill.selected {
+      background: #e0ecff;
+      border-color: var(--blue);
+    }
+
+    .end-options {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    .end-option-line {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .drawer-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .drawer-footer .secondary-btn,
+    .drawer-footer .primary-btn {
+      width: 50%;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+      .top-bar {
+        padding-inline: 12px;
+      }
+      .pages {
+        padding-inline: 12px;
+      }
+      .calendar-shell {
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="app-shell">
-    <!-- תפריט צד ימני -->
+  <div class="app">
     <aside class="sidebar">
-      <div class="sidebar__logo">
-        <!-- שים פה את קובץ הלוגו הלבן/שחור שלך בתיקיית images -->
-        <img src="images/elad-logo-white-trans.png" alt="ELAD CRM Logo" />
-        <span class="sidebar__logo-text">ELAD CRM</span>
-      </div>
+      <div class="sidebar-header">ELAD CRM</div>
 
-      <nav class="sidebar__nav">
-        <button class="nav-item nav-item--active" data-page-target="dashboard">
-          <span>לוח בקרה ראשי</span>
-        </button>
-        <button class="nav-item" data-page-target="calendar">
-          <span>לוח שנה</span>
-        </button>
-        <button class="nav-item nav-item--disabled">
-          <span>סליקה (בקרוב)</span>
-        </button>
-        <button class="nav-item" data-page-target="leads">
-          <span>מתעניינים</span>
-        </button>
-        <button class="nav-item" data-page-target="clients">
-          <span>לקוחות</span>
-        </button>
-        <button class="nav-item" data-page-target="trainings">
-          <span>אימונים וקורסים</span>
-        </button>
-        <button class="nav-item" data-page-target="finance">
-          <span>פיננסים</span>
-        </button>
-        <button class="nav-item" data-page-target="team">
-          <span>צוות</span>
-        </button>
-        <button class="nav-item nav-item--disabled">
-          <span>אוטומציות (בקרוב)</span>
-        </button>
-        <button class="nav-item" data-page-target="settings">
-          <span>הגדרות</span>
-        </button>
-      </nav>
+      <div class="nav-group-title">ניווט</div>
+      <button class="nav-btn active" data-page-target="dashboard">
+        <span class="icon">🏠</span> לוח בית
+      </button>
+      <button class="nav-btn" data-page-target="clients">
+        <span class="icon">👤</span> לקוחות
+      </button>
+      <button class="nav-btn" data-page-target="courses">
+        <span class="icon">🎯</span> קורסים
+      </button>
+      <button class="nav-btn" data-page-target="participants">
+        <span class="icon">🧍</span> משתתפים
+      </button>
+      <button class="nav-btn" data-page-target="reports">
+        <span class="icon">📊</span> דוחות
+      </button>
+      <button class="nav-btn" data-page-target="calendar">
+        <span class="icon">📅</span> יומן
+      </button>
+
+      <div class="sidebar-footer">
+        ELAD – בית הספר ללוחמה בטרור
+      </div>
     </aside>
 
-    <!-- אזור תוכן מרכזי -->
     <main class="main">
-      <!-- טופ-בר -->
-      <header class="topbar">
-        <div class="topbar__left">
-          <img src="images/elad-logo-black-trans.png" class="topbar__logo" alt="ELAD Logo Small" />
-          <div class="topbar__titles">
-            <h1 class="topbar__title">לוח בקרה ראשי</h1>
-            <p class="topbar__subtitle">צילום מצב יומי של העסק</p>
-          </div>
-        </div>
-        <div class="topbar__right">
-          <div class="user-chip">
-            <div class="user-chip__avatar">א</div>
-            <div class="user-chip__info">
-              <span class="user-chip__name">אלעד (בעלים)</span>
-              <span class="user-chip__role">מנהל מערכת</span>
-            </div>
-          </div>
-          <button class="btn btn--ghost" id="logoutBtn">התנתקות</button>
+      <header class="top-bar">
+        <div class="top-bar-title">ELAD CRM – מערכת ניהול</div>
+        <div class="top-bar-right">
+          <span>מחובר כ־אלעד</span>
+          <div class="avatar">EA</div>
         </div>
       </header>
 
-      <!-- דפים / מסכים -->
-      <!-- 1. לוח בקרה ראשי -->
-      <section id="page-dashboard" class="page page--active">
-        <div class="page__inner">
-          <!-- כפתורי פעולה מהירה -->
-          <div class="quick-actions">
-            <button class="btn btn--primary">+ מתעניין חדש</button>
-            <button class="btn btn--outline">+ לקוח חדש</button>
-            <button class="btn btn--outline">+ אימון / קורס חדש</button>
-          </div>
-
-          <!-- כרטיסי KPI -->
-          <div class="kpi-grid">
-            <div class="kpi-card">
-              <div class="kpi-card__label">הכנסות חודש נוכחי</div>
-              <div class="kpi-card__value-row">
-                <span id="kpi-revenue" class="kpi-card__value">₪0</span>
-                <span id="kpi-revenue-change" class="kpi-card__change kpi-card__change--up">
-                  ↑ 0%
-                </span>
-              </div>
-              <div class="kpi-card__hint">לעומת חודש קודם</div>
-            </div>
-
-            <div class="kpi-card">
-              <div class="kpi-card__label">לידים חדשים החודש</div>
-              <div class="kpi-card__value-row">
-                <span id="kpi-leads" class="kpi-card__value">0</span>
-                <span id="kpi-leads-change" class="kpi-card__change kpi-card__change--up">
-                  ↑ 0%
-                </span>
-              </div>
-              <div class="kpi-card__hint">מכל הערוצים</div>
-            </div>
-
-            <div class="kpi-card">
-              <div class="kpi-card__label">לקוחות פעילים</div>
-              <div class="kpi-card__value-row">
-                <span id="kpi-active-clients" class="kpi-card__value">0</span>
-                <span id="kpi-active-clients-change" class="kpi-card__change kpi-card__change--neutral">
-                  • 0%
-                </span>
-              </div>
-              <div class="kpi-card__hint">קורסים / אימונים בתהליך</div>
-            </div>
-
-            <div class="kpi-card">
-              <div class="kpi-card__label">אימונים היום</div>
-              <div class="kpi-card__value-row">
-                <span id="kpi-today-trainings" class="kpi-card__value">0</span>
-                <span id="kpi-today-trainings-change" class="kpi-card__change kpi-card__change--neutral">
-                  • היום
-                </span>
-              </div>
-              <div class="kpi-card__hint">אימונים / קורסים ביומן</div>
+      <div class="pages">
+        <!-- דשבורד -->
+        <section id="dashboard" class="page active">
+          <div class="card">
+            <div class="card-title">ברוך הבא ל־ELAD CRM</div>
+            <div class="muted">
+              פה תרכז את כל העסק: לקוחות, קורסים, משתתפים, דוחות – ויומן אימונים שעובד כמו שצריך.
             </div>
           </div>
+        </section>
 
-          <!-- גרף הכנסות + פעולות אחרונות -->
-          <div class="dashboard-grid">
-            <div class="card card--chart">
-              <div class="card__header">
-                <h2 class="card__title">הכנסות לפי חודשים</h2>
-                <span class="card__subtitle">נתוני דמו – נחבר לשרת בהמשך</span>
-              </div>
-              <div id="revenueChart" class="chart-bars">
-                <!-- App.js ייצור את העמודות -->
-              </div>
-            </div>
-
-            <div class="card card--activity">
-              <div class="card__header">
-                <h2 class="card__title">פעולות אחרונות</h2>
-                <span class="card__subtitle">תצוגת דמו – נחבר ל־DB</span>
-              </div>
-              <ul id="activityFeed" class="activity-feed">
-                <!-- App.js יכניס פריטים -->
-              </ul>
+        <!-- לקוחות -->
+        <section id="clients" class="page">
+          <div class="card">
+            <div class="card-title">לקוחות</div>
+            <div class="muted">
+              פה בהמשך נבנה טבלה של כל הלקוחות, סטטוס, טלפון, מקור הגעה וכו'.
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 2. לוח שנה -->
-      <section id="page-calendar" class="page">
-        <div class="page__inner">
-          <h2 class="page__title">לוח שנה</h2>
-          <p class="page__hint">כאן נבנה את היומן המלא עם אימונים וקורסים – בשלב הבא.</p>
-        </div>
-      </section>
+        <!-- קורסים -->
+        <section id="courses" class="page">
+          <div class="card">
+            <div class="card-title">קורסים</div>
+            <div class="muted">
+              רשימת קורסים – בסיס, מתקדם, CQB, ניגריה, הכל במקום אחד. נרחיב את זה אחרי שהיומן יעבוד פיקס.
+            </div>
+          </div>
+        </section>
 
-      <!-- 3. מתעניינים -->
-      <section id="page-leads" class="page">
-        <div class="page__inner">
-          <h2 class="page__title">מתעניינים</h2>
-          <p class="page__hint">בשלב הבא נוסיף טבלה מלאה לניהול לידים, בדיוק כמו בארבוקס.</p>
-        </div>
-      </section>
+        <!-- משתתפים -->
+        <section id="participants" class="page">
+          <div class="card">
+            <div class="card-title">משתתפים</div>
+            <div class="muted">
+              מעקב אחרי מי היה באיזה אימון / קורס, נוכחות, דירוג ביצוע – נבנה את זה בהמשך.
+            </div>
+          </div>
+        </section>
 
-      <!-- 4. לקוחות -->
-      <section id="page-clients" class="page">
-        <div class="page__inner">
-          <h2 class="page__title">לקוחות</h2>
-          <p class="page__hint">כאן תהיה טבלת לקוחות פעילים, הרשמות לקורסים, ועוד.</p>
-        </div>
-      </section>
+        <!-- דוחות -->
+        <section id="reports" class="page">
+          <div class="card">
+            <div class="card-title">דוחות</div>
+            <div class="muted">
+              מקום לדוחות רווחיות, דוחות ירי, תחמושת, עומס מדריכים ועוד.
+            </div>
+          </div>
+        </section>
 
-      <!-- 5. אימונים וקורסים -->
-      <section id="page-trainings" class="page">
-        <div class="page__inner">
-          <h2 class="page__title">אימונים וקורסים</h2>
-          <p class="page__hint">כאן נבנה את פאנל האימונים והקורסים החודשיים + ניהול משתתפים.</p>
-        </div>
-      </section>
+        <!-- יומן -->
+        <section id="calendar" class="page">
+          <div class="calendar-top-bar">
+            <h1>יומן</h1>
+            <button id="openEventDrawer" class="primary-btn">הוספה</button>
+          </div>
 
-      <!-- 6. פיננסים -->
-      <section id="page-finance" class="page">
-        <div class="page__inner">
-          <h2 class="page__title">פיננסים</h2>
-          <p class="page__hint">הכנסות, הוצאות, משכורות – נבנה UI מפורט בהמשך.</p>
-        </div>
-      </section>
+          <div class="calendar-shell">
+            <div class="calendar-header-row">
+              <button id="prevMonthBtn" class="icon-btn">&#x276E;</button>
+              <div id="calendarMonthLabel" class="calendar-month-label"></div>
+              <button id="nextMonthBtn" class="icon-btn">&#x276F;</button>
+            </div>
 
-      <!-- 7. צוות -->
-      <section id="page-team" class="page">
-        <div class="page__inner">
-          <h2 class="page__title">צוות</h2>
-          <p class="page__hint">ניהול אנשי צוות והרשאות – נבנה מסכי טפסים כמו בארבוקס.</p>
-        </div>
-      </section>
+            <div class="calendar-weekdays">
+              <div>א'</div>
+              <div>ב'</div>
+              <div>ג'</div>
+              <div>ד'</div>
+              <div>ה'</div>
+              <div>ו'</div>
+              <div>ש'</div>
+            </div>
 
-      <!-- 8. הגדרות -->
-      <section id="page-settings" class="page">
-        <div class="page__inner">
-          <h2 class="page__title">הגדרות</h2>
-          <p class="page__hint">פרטי עסק, סטטוסים, מקורות לידים, ועוד – נפרק לנושאים בהמשך.</p>
-        </div>
-      </section>
+            <div id="calendarGrid" class="calendar-grid">
+              <!-- ימולא ב־JS -->
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
   </div>
 
-  <script src="app.js"></script>
+  <!-- DRAWER – הוספת אירוע -->
+  <div id="eventDrawerOverlay" class="drawer-overlay hidden">
+    <div class="event-drawer">
+      <div class="drawer-header">
+        <button id="closeEventDrawer" class="drawer-close-btn">×</button>
+
+        <div class="drawer-steps">
+          <div class="drawer-step active" data-step-indicator="1">
+            <div class="circle">1</div>
+            <span>סוג אירוע</span>
+          </div>
+          <div class="drawer-step" data-step-indicator="2">
+            <div class="circle">2</div>
+            <span>פרטים</span>
+          </div>
+          <div class="drawer-step" data-step-indicator="3">
+            <div class="circle">3</div>
+            <span>זמן</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-body">
+        <!-- שלב 1 -->
+        <div class="drawer-step-content" id="drawer-step-1">
+          <h2 class="drawer-title">הוספת אירוע</h2>
+          <p class="drawer-subtitle">בחרו את סוג האירוע שאתם רוצים לשבץ ביומן.</p>
+
+          <div class="event-type-options">
+            <button class="event-type-card" data-event-type="single">
+              <div class="event-type-main">אימון חד־יומי</div>
+              <div class="event-type-desc">
+                אימון בודד בתאריך ושעה ספציפיים.
+              </div>
+            </button>
+
+            <button class="event-type-card" data-event-type="basic-course">
+              <div class="event-type-main">קורס בסיס</div>
+              <div class="event-type-desc">
+                מספר מפגשים בסיסיים על בסיס שבועי.
+              </div>
+            </button>
+
+            <button class="event-type-card" data-event-type="advanced-course">
+              <div class="event-type-main">קורס מתקדם</div>
+              <div class="event-type-desc">
+                קורס המשך ברמה גבוהה למתאמנים מתקדמים.
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- שלב 2 -->
+        <div class="drawer-step-content hidden" id="drawer-step-2">
+          <h2 class="drawer-title">פרטי האירוע</h2>
+          <p class="drawer-subtitle">מלאו את פרטי האימון או הקורס.</p>
+
+          <label class="drawer-label">שם האימון / הקורס*</label>
+          <input id="eventTitleInput" class="drawer-input" placeholder="לדוגמה: קורס בסיס מחזור 5">
+
+          <label class="drawer-label">מאמן</label>
+          <input id="eventTrainerInput" class="drawer-input" placeholder="לדוגמה: אלעד אטיאס">
+
+          <label class="drawer-label">מיקום / חומה / כיתה</label>
+          <input id="eventLocationInput" class="drawer-input" placeholder="לדוגמה: חומה 1 / כיתה A">
+
+          <label class="drawer-label">הערה</label>
+          <textarea id="eventNoteInput" class="drawer-input" rows="3" placeholder="הערות, ציוד נדרש וכו'"></textarea>
+
+          <label class="drawer-label">מספר משתתפים מקסימלי</label>
+          <input id="eventMaxParticipantsInput" type="number" min="1" class="drawer-input" placeholder="לדוגמה: 12">
+        </div>
+
+        <!-- שלב 3 -->
+        <div class="drawer-step-content hidden" id="drawer-step-3">
+          <h2 class="drawer-title">קביעת זמן</h2>
+          <p class="drawer-subtitle">קבעו את מועד האימון והתדירות.</p>
+
+          <label class="drawer-label">תאריך התחלה*</label>
+          <input id="eventDateInput" type="date" class="drawer-input">
+
+          <label class="drawer-label">שעות*</label>
+          <div class="time-range">
+            <input id="eventStartTimeInput" type="time" class="drawer-input">
+            <span>-</span>
+            <input id="eventEndTimeInput" type="time" class="drawer-input">
+          </div>
+
+          <label class="drawer-label">תדירות</label>
+          <div class="frequency-row">
+            <label class="radio-pill">
+              <input type="radio" name="eventFrequency" value="once" checked>
+              <span>חד פעמית</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="eventFrequency" value="weekly">
+              <span>שבועית</span>
+            </label>
+          </div>
+
+          <div id="weeklyOptions" class="weekly-options hidden">
+            <div class="drawer-label">בימים</div>
+            <div class="weekday-pills">
+              <button class="weekday-pill" data-weekday="0">א'</button>
+              <button class="weekday-pill" data-weekday="1">ב'</button>
+              <button class="weekday-pill" data-weekday="2">ג'</button>
+              <button class="weekday-pill" data-weekday="3">ד'</button>
+              <button class="weekday-pill" data-weekday="4">ה'</button>
+              <button class="weekday-pill" data-weekday="5">ו'</button>
+              <button class="weekday-pill" data-weekday="6">ש'</button>
+            </div>
+
+            <div class="drawer-label">סיום</div>
+            <div class="end-options">
+              <label class="end-option-line">
+                <input type="radio" name="eventEndMode" value="never" checked>
+                <span>אף פעם</span>
+              </label>
+              <label class="end-option-line">
+                <input type="radio" name="eventEndMode" value="untilDate">
+                <span>בתאריך</span>
+                <input id="eventEndDateInput" type="date" class="drawer-input" style="max-width: 160px;">
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button id="drawerBackBtn" class="secondary-btn">חזור</button>
+        <button id="drawerNextBtn" class="primary-btn">הבא</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ניווט בין עמודים
+    (function () {
+      const navButtons = document.querySelectorAll(".nav-btn");
+      const pages = document.querySelectorAll(".page");
+
+      navButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = btn.dataset.pageTarget;
+          navButtons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          pages.forEach((p) => {
+            p.classList.toggle("active", p.id === target);
+          });
+        });
+      });
+    })();
+
+    // ===== יומן =====
+
+    let calendarEvents = []; // כל האירועים המורחבים (כולל חזרות שבועיות)
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    const calendarGrid = document.getElementById("calendarGrid");
+    const monthLabel = document.getElementById("calendarMonthLabel");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+
+    function formatDateKey(year, monthIndex, day) {
+      const m = monthIndex + 1;
+      const mm = m < 10 ? "0" + m : "" + m;
+      const dd = day < 10 ? "0" + day : "" + day;
+      return year + "-" + mm + "-" + dd;
+    }
+
+    function renderCalendar() {
+      if (!calendarGrid || !monthLabel) return;
+
+      calendarGrid.innerHTML = "";
+
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+
+      const firstWeekday = (firstDay.getDay() + 6) % 7; // התאמה לשבוע שמתחיל בא'
+
+      const monthNames = [
+        "ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני",
+        "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"
+      ];
+
+      monthLabel.textContent = monthNames[currentMonth] + " " + currentYear;
+
+      for (let i = 0; i < firstWeekday; i++) {
+        const emptyCell = document.createElement("div");
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      const today = new Date();
+      const todayD = today.getDate();
+      const todayM = today.getMonth();
+      const todayY = today.getFullYear();
+
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const cell = document.createElement("div");
+        cell.className = "calendar-day";
+
+        const num = document.createElement("div");
+        num.className = "calendar-day-number";
+        num.textContent = day;
+        cell.appendChild(num);
+
+        if (day === todayD && currentMonth === todayM && currentYear === todayY) {
+          cell.classList.add("calendar-day-today");
+        }
+
+        const key = formatDateKey(currentYear, currentMonth, day);
+        const eventsForDay = calendarEvents.filter((e) => e.date === key);
+
+        eventsForDay.forEach((event) => {
+          const tag = document.createElement("div");
+          tag.className = "calendar-day-event " + event.type;
+          tag.textContent = event.title;
+          cell.appendChild(tag);
+        });
+
+        calendarGrid.appendChild(cell);
+      }
+    }
+
+    if (prevMonthBtn && nextMonthBtn) {
+      prevMonthBtn.addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+          currentMonth = 11;
+          currentYear--;
+        }
+        renderCalendar();
+      });
+
+      nextMonthBtn.addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        }
+        renderCalendar();
+      });
+    }
+
+    renderCalendar();
+
+    // ===== DRAWER – וויזארד של האירוע =====
+
+    const eventDrawerOverlay = document.getElementById("eventDrawerOverlay");
+    const openEventDrawerBtn = document.getElementById("openEventDrawer");
+    const closeEventDrawerBtn = document.getElementById("closeEventDrawer");
+    const drawerBackBtn = document.getElementById("drawerBackBtn");
+    const drawerNextBtn = document.getElementById("drawerNextBtn");
+
+    const drawerStepElems = document.querySelectorAll(".drawer-step");
+    const drawerStepContents = {
+      1: document.getElementById("drawer-step-1"),
+      2: document.getElementById("drawer-step-2"),
+      3: document.getElementById("drawer-step-3"),
+    };
+
+    let currentStep = 1;
+    let selectedEventType = null;
+
+    const eventTypeCards = document.querySelectorAll(".event-type-card");
+
+    const eventTitleInput = document.getElementById("eventTitleInput");
+    const eventTrainerInput = document.getElementById("eventTrainerInput");
+    const eventLocationInput = document.getElementById("eventLocationInput");
+    const eventNoteInput = document.getElementById("eventNoteInput");
+    const eventMaxParticipantsInput = document.getElementById("eventMaxParticipantsInput");
+
+    const eventDateInput = document.getElementById("eventDateInput");
+    const eventStartTimeInput = document.getElementById("eventStartTimeInput");
+    const eventEndTimeInput = document.getElementById("eventEndTimeInput");
+    const weeklyOptions = document.getElementById("weeklyOptions");
+    const weekdayPills = document.querySelectorAll(".weekday-pill");
+    const eventEndDateInput = document.getElementById("eventEndDateInput");
+
+    let selectedWeekdays = new Set();
+
+    function openDrawer() {
+      eventDrawerOverlay.classList.remove("hidden");
+      resetDrawer();
+    }
+
+    function closeDrawer() {
+      eventDrawerOverlay.classList.add("hidden");
+    }
+
+    function resetDrawer() {
+      currentStep = 1;
+      selectedEventType = null;
+      selectedWeekdays = new Set();
+
+      eventTypeCards.forEach((c) => c.classList.remove("selected"));
+
+      eventTitleInput.value = "";
+      eventTrainerInput.value = "";
+      eventLocationInput.value = "";
+      eventNoteInput.value = "";
+      eventMaxParticipantsInput.value = "";
+
+      eventDateInput.value = "";
+      eventStartTimeInput.value = "";
+      eventEndTimeInput.value = "";
+      eventEndDateInput.value = "";
+
+      document.querySelectorAll("input[name='eventFrequency']").forEach((r) => {
+        r.checked = r.value === "once";
+      });
+      document.querySelectorAll("input[name='eventEndMode']").forEach((r) => {
+        r.checked = r.value === "never";
+      });
+      weeklyOptions.classList.add("hidden");
+      weekdayPills.forEach((p) => p.classList.remove("selected"));
+
+      updateDrawerStepUI();
+    }
+
+    function updateDrawerStepUI() {
+      Object.keys(drawerStepContents).forEach((step) => {
+        drawerStepContents[step].classList.toggle("hidden", parseInt(step) !== currentStep);
+      });
+
+      drawerStepElems.forEach((el) => {
+        const stepNum = parseInt(el.dataset.stepIndicator, 10);
+        el.classList.toggle("active", stepNum === currentStep);
+      });
+
+      if (currentStep === 3) {
+        drawerNextBtn.textContent = "שמור";
+      } else {
+        drawerNextBtn.textContent = "הבא";
+      }
+    }
+
+    openEventDrawerBtn.addEventListener("click", openDrawer);
+    closeEventDrawerBtn.addEventListener("click", closeDrawer);
+
+    eventTypeCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        eventTypeCards.forEach((c) => c.classList.remove("selected"));
+        card.classList.add("selected");
+        selectedEventType = card.dataset.eventType;
+      });
+    });
+
+    drawerBackBtn.addEventListener("click", () => {
+      if (currentStep === 1) {
+        closeDrawer();
+      } else {
+        currentStep -= 1;
+        updateDrawerStepUI();
+      }
+    });
+
+    drawerNextBtn.addEventListener("click", () => {
+      if (currentStep === 1) {
+        if (!selectedEventType) {
+          alert("בחר סוג אירוע קודם");
+          return;
+        }
+        currentStep = 2;
+        updateDrawerStepUI();
+      } else if (currentStep === 2) {
+        if (!eventTitleInput.value.trim()) {
+          alert("שם האימון / הקורס חובה");
+          return;
+        }
+        currentStep = 3;
+        updateDrawerStepUI();
+      } else if (currentStep === 3) {
+        saveEventFromDrawer();
+      }
+    });
+
+    // שינוי תדירות – חד פעמי / שבועי
+    document.querySelectorAll("input[name='eventFrequency']").forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (radio.value === "weekly" && radio.checked) {
+          weeklyOptions.classList.remove("hidden");
+        }
+        if (radio.value === "once" && radio.checked) {
+          weeklyOptions.classList.add("hidden");
+        }
+      });
+    });
+
+    // בחירת ימים בשבוע
+    weekdayPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        const dayIdx = parseInt(pill.dataset.weekday, 10);
+        if (selectedWeekdays.has(dayIdx)) {
+          selectedWeekdays.delete(dayIdx);
+          pill.classList.remove("selected");
+        } else {
+          selectedWeekdays.add(dayIdx);
+          pill.classList.add("selected");
+        }
+      });
+    });
+
+    function parseDateInput(value) {
+      if (!value) return null;
+      const [y, m, d] = value.split("-").map((v) => parseInt(v, 10));
+      return new Date(y, m - 1, d);
+    }
+
+    function cloneDate(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function saveEventFromDrawer() {
+      const title = eventTitleInput.value.trim();
+      const trainer = eventTrainerInput.value.trim();
+      const location = eventLocationInput.value.trim();
+      const note = eventNoteInput.value.trim();
+      const maxP = eventMaxParticipantsInput.value
+        ? parseInt(eventMaxParticipantsInput.value, 10)
+        : null;
+
+      const startDate = parseDateInput(eventDateInput.value);
+      const startTime = eventStartTimeInput.value;
+      const endTime = eventEndTimeInput.value;
+
+      if (!title || !startDate || !startTime || !endTime || !selectedEventType) {
+        alert("חסר שם / תאריך / שעות / סוג אירוע");
+        return;
+      }
+
+      const freqRadio = Array.from(
+        document.querySelectorAll("input[name='eventFrequency']")
+      ).find((r) => r.checked);
+      const frequency = freqRadio ? freqRadio.value : "once";
+
+      const eventsToAdd = [];
+
+      if (frequency === "once" || selectedEventType === "single") {
+        const key = eventDateInput.value;
+        eventsToAdd.push({
+          type: selectedEventType || "single",
+          title,
+          trainer,
+          location,
+          note,
+          maxParticipants: maxP,
+          date: key,
+          startTime,
+          endTime,
+        });
+      } else {
+        // שבועי
+        if (selectedWeekdays.size === 0) {
+          alert("בחרת תדירות שבועית – צריך לבחור לפחות יום אחד בשבוע");
+          return;
+        }
+
+        const endModeRadio = Array.from(
+          document.querySelectorAll("input[name='eventEndMode']")
+        ).find((r) => r.checked);
+        const endMode = endModeRadio ? endModeRadio.value : "never";
+
+        let endDate;
+        if (endMode === "untilDate" && eventEndDateInput.value) {
+          endDate = parseDateInput(eventEndDateInput.value);
+        } else {
+          // ברירת מחדל: 8 שבועות קדימה
+          endDate = cloneDate(startDate);
+          endDate.setDate(endDate.getDate() + 7 * 8);
+        }
+
+        selectedWeekdays.forEach((weekday) => {
+          let d = cloneDate(startDate);
+          while (d.getDay() !== weekday) {
+            d.setDate(d.getDate() + 1);
+          }
+          while (d <= endDate) {
+            const year = d.getFullYear();
+            const monthIdx = d.getMonth();
+            const day = d.getDate();
+            const key = formatDateKey(year, monthIdx, day);
+            eventsToAdd.push({
+              type: selectedEventType,
+              title,
+              trainer,
+              location,
+              note,
+              maxParticipants: maxP,
+              date: key,
+              startTime,
+              endTime,
+            });
+            d.setDate(d.getDate() + 7);
+          }
+        });
+      }
+
+      calendarEvents = calendarEvents.concat(eventsToAdd);
+      renderCalendar();
+      closeDrawer();
+    }
+  </script>
 </body>
 </html>
