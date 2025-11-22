@@ -1,42 +1,50 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>כניסה למערכת – ELAD CRM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body class="login-body">
-  <div class="login-wrapper">
-    <h1 class="login-title">כניסה למערכת</h1>
-    <p class="login-subtitle">
-      התחבר כדי לגשת ל-CRM של בית הספר ללוחמה בטרור.
-    </p>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
+  const errorBox = document.getElementById("loginError");
 
-    <button class="primary-btn" data-netlify-identity-button>
-      התחברות / הרשמה
-    </button>
+  if (!form) return;
 
-    <div class="login-footer">
-      ההתחברות מתבצעת דרך Netlify Identity. רק משתמשים שהוזמנו למערכת יכולים להיכנס.
-    </div>
-  </div>
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", function (user) {
-        if (user) {
-          window.location.href = "/";
-        }
-      });
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-      window.netlifyIdentity.on("login", function () {
-        window.location.href = "/";
-      });
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
 
-      window.netlifyIdentity.init();
+    if (!email || !password) {
+      errorBox.textContent = "נא למלא אימייל וסיסמה";
+      errorBox.style.display = "block";
+      return;
     }
-  </script>
-</body>
-</html>
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        errorBox.textContent = data.message || "אימייל או סיסמה שגויים";
+        errorBox.style.display = "block";
+        return;
+      }
+
+      // שומרים את המשתמש המחובר
+      localStorage.setItem("crmUser", JSON.stringify(data.user));
+
+      // מעבר לדשבורד
+      window.location.href = "/";
+    } catch (err) {
+      console.error(err);
+      errorBox.textContent = "שגיאת תקשורת, נסה שוב עוד רגע";
+      errorBox.style.display = "block";
+    }
+  });
+});
