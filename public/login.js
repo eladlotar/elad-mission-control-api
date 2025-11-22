@@ -1,50 +1,42 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("loginForm");
-  const errorBox = document.getElementById("loginError");
+const loginForm = document.getElementById("loginForm");
 
-  if (!form) return;
+if (loginForm) {
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    errorBox.style.display = "none";
-    errorBox.textContent = "";
+    const email = emailInput ? emailInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value.trim() : "";
 
     if (!email || !password) {
-      errorBox.textContent = "נא למלא אימייל וסיסמה";
-      errorBox.style.display = "block";
+      alert("תכניס אימייל וסיסמה");
       return;
     }
 
     try {
       const res = await fetch("/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        errorBox.textContent = data.message || "אימייל או סיסמה שגויים";
-        errorBox.style.display = "block";
+        alert(data.message || "אימייל או סיסמה שגויים");
         return;
       }
 
-      // שומרים את המשתמש המחובר בדפדפן
+      // שמירת המשתמש המחובר (אם נרצה להשתמש בעתיד)
       localStorage.setItem("crmUser", JSON.stringify(data.user));
 
       // מעבר לדשבורד
-      window.location.href = "/";
+      window.location.href = "/index.html";
     } catch (err) {
-      console.error(err);
-      errorBox.textContent = "שגיאת תקשורת, נסה שוב עוד רגע";
-      errorBox.style.display = "block";
+      console.error("Login error:", err);
+      alert("שגיאה בשרת, נסה שוב בעוד רגע");
     }
   });
-});
+}
