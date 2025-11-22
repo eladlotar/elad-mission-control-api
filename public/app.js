@@ -1,3 +1,56 @@
+// ===== בדיקת התחברות לפני הכל =====
+(function () {
+  const stored = localStorage.getItem("loggedInUser");
+  if (!stored) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  try {
+    const user = JSON.parse(stored);
+    if (!user || !user.email) {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "/login.html";
+      return;
+    }
+    const nameSpan = document.getElementById("currentUserName");
+    if (nameSpan && user.name) {
+      nameSpan.textContent = user.name;
+    }
+  } catch (e) {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "/login.html";
+  }
+})();
+
+// ===== ניתוק אוטומטי אחרי שעה חוסר פעילות =====
+const ONE_HOUR_MS = 60 * 60 * 1000;
+let inactivityTimer;
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    localStorage.removeItem("loggedInUser");
+    alert("נותקת מהמערכת עקב חוסר פעילות של שעה. התחבר שוב.");
+    window.location.href = "/login.html";
+  }, ONE_HOUR_MS);
+}
+
+["click", "keydown", "mousemove", "scroll", "touchstart"].forEach((evt) => {
+  document.addEventListener(evt, resetInactivityTimer);
+});
+
+resetInactivityTimer();
+
+// ===== כפתור התנתקות =====
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "/login.html";
+  });
+}
+
 // ===== ניווט בין סקשנים =====
 const navItems = document.querySelectorAll(".nav-item");
 const sections = document.querySelectorAll(".section");
@@ -70,16 +123,7 @@ navItems.forEach((item) => {
   });
 });
 
-// ===== כפתור התנתקות =====
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("crmUser");
-    window.location.href = "/login.html";
-  });
-}
-
-// ===== יומן / לוח שנה – לוגיקה בסיסית =====
+// ===== יומן / לוח שנה =====
 const calendarTitle = document.getElementById("calendarTitle");
 const calendarGrid = document.getElementById("calendarGrid");
 const prevMonthBtn = document.getElementById("prevMonthBtn");
@@ -226,7 +270,7 @@ if (eventForm) {
 
 buildCalendar(currentDate);
 
-// ===== פיננסים – לוגיקה =====
+// ===== פיננסים =====
 const totalIncomeEl = document.getElementById("totalIncome");
 const totalExpenseEl = document.getElementById("totalExpense");
 const netProfitEl = document.getElementById("netProfit");
