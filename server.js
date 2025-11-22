@@ -70,12 +70,12 @@ app.use(express.json());
 // קבצים סטטיים
 app.use(express.static(path.join(__dirname, "public")));
 
-// דשבורד
+// דשבורד – קובץ index.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// לוגין – עכשיו מה-DB
+// לוגין – API מול DB
 app.post("/api/login", async (req, res) => {
   if (!pool) {
     return res
