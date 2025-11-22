@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // שומרים את המשתמש המחובר
+      // שומרים את המשתמש המחובר בדפדפן
       localStorage.setItem("crmUser", JSON.stringify(data.user));
 
       // מעבר לדשבורד
