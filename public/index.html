@@ -2,227 +2,98 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>ELAD CRM – דשבורד</title>
+  <title>ELAD CRM - Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="layout">
-    <!-- סיידבר -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand-logo">
-          <img src="elad-logo-black-trans.png" alt="ELAD" />
-        </div>
-        <div class="brand-text">
-          <div class="brand-title">ELAD – CRM</div>
-          <div class="brand-subtitle">בית הספר ללוחמה בטרור</div>
+  <div class="app-root">
+    <!-- טופ-בר -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <img src="elad-logo-black-trans.png" alt="ELAD" class="topbar-logo" />
+        <div class="topbar-title">
+          <div class="topbar-main">ELAD – CRM</div>
+          <div class="topbar-sub">בית הספר ללוחמה בטרור</div>
         </div>
       </div>
+      <div class="topbar-right">
+        <span class="topbar-user">
+          מחובר כ־<span id="currentUserName">...</span>
+        </span>
+        <button id="logoutBtn" class="topbar-logout">התנתקות</button>
+      </div>
+    </header>
 
-      <nav class="sidebar-nav">
-        <div class="nav-item active" data-section="dashboard">
-          <span>עמוד הבית</span>
-        </div>
-        <div class="nav-item" data-section="calendar">
-          <span>יומן / לוח שנה</span>
-        </div>
-        <div class="nav-item" data-section="clients">
-          <span>לקוחות</span>
-        </div>
-        <div class="nav-item" data-section="leads">
-          <span>לידים</span>
-        </div>
-        <div class="nav-item" data-section="courses">
-          <span>קורסים</span>
-        </div>
-        <div class="nav-item" data-section="instructors">
-          <span>מדריכים</span>
-        </div>
-        <div class="nav-item" data-section="finance">
-          <span>פיננסים</span>
-        </div>
-        <div class="nav-item" data-section="tasks">
-          <span>משימות</span>
-        </div>
-        <div class="nav-item" data-section="reports">
-          <span>דוחות</span>
-        </div>
-        <div class="nav-item" data-section="settings">
-          <span>הגדרות מערכת</span>
+    <div class="layout">
+      <!-- תפריט צד -->
+      <nav class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">ניווט</div>
+          <div class="nav-item active" data-section="dashboard">עמוד הבית</div>
+          <div class="nav-item" data-section="calendar">יומן / לוח שנה</div>
+          <div class="nav-item" data-section="clients">לקוחות</div>
+          <div class="nav-item" data-section="leads">לידים</div>
+          <div class="nav-item" data-section="courses">קורסים</div>
+          <div class="nav-item" data-section="instructors">מדריכים</div>
+          <div class="nav-item" data-section="finance">פיננסים</div>
+          <div class="nav-item" data-section="tasks">משימות</div>
+          <div class="nav-item" data-section="reports">דוחות</div>
+          <div class="nav-item" data-section="settings">הגדרות</div>
         </div>
       </nav>
 
-      <div class="sidebar-footer">
-        <button id="logoutBtn" class="logout-button">התנתקות</button>
-      </div>
-    </aside>
-
-    <!-- אזור תוכן -->
-    <main class="main">
-      <!-- טופ־בר -->
-      <header class="topbar">
-        <div>
-          <div class="page-title">עמוד הבית</div>
-          <div class="page-subtitle">סקירה מהירה על העסק שלך</div>
-        </div>
-        <div class="user-badge">
-          <div class="user-avatar">א</div>
-          <div class="user-text">
-            <div class="user-name">אלעד אטיאס</div>
-            <div class="user-role">Owner</div>
-          </div>
-        </div>
-      </header>
-
       <!-- תוכן מרכזי -->
-      <section class="content">
+      <main class="main">
+        <div class="page-header">
+          <h1 class="page-title">עמוד הבית</h1>
+          <p class="page-subtitle">סקירה מהירה על העסק שלך</p>
+        </div>
 
-        <!-- דשבורד ראשי -->
+        <!-- סקשן דשבורד -->
         <section id="dashboard" class="section active">
           <div class="cards-row">
             <div class="card">
-              <div class="card-title">מתאמנים החודש</div>
-              <div class="card-main-number">38</div>
-              <div class="card-subtext">כולל קורסים ואימוני ערב</div>
+              <div class="card-title">סיכום מהיר</div>
+              <p>כאן נשים בהמשך גרפים ו-KPI על העסק.</p>
             </div>
             <div class="card">
-              <div class="card-title">הכנסה משוערת</div>
-              <div class="card-main-number">₪ 74,800</div>
-              <div class="card-subtext">לפני הוצאות ותחמושת</div>
-            </div>
-            <div class="card">
-              <div class="card-title">אימונים פתוחים השבוע</div>
-              <div class="card-main-number">7</div>
-              <div class="card-subtext">כולל קורסים פעילים</div>
-            </div>
-          </div>
-
-          <div class="split-row">
-            <div class="card">
-              <div class="card-title">מה קורה היום</div>
-              <ul class="list">
-                <li>
-                  <div class="list-time">09:00</div>
-                  <div class="list-main">
-                    <div class="list-title">קורס יסודות אקדח – מפגש 2</div>
-                    <div class="list-subtitle">6 משתתפים · מדריך: אלעד</div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-time">16:00</div>
-                  <div class="list-main">
-                    <div class="list-title">אימון ערב – קבוצה קבועה</div>
-                    <div class="list-subtitle">12 משתתפים · חומה 2</div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-time">20:30</div>
-                  <div class="list-main">
-                    <div class="list-title">פגישת תכנון – קורס מתקדם</div>
-                    <div class="list-subtitle">שבוע הבא · תכנון ליין ירי</div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div class="card">
-              <div class="card-title">התראות מהירות</div>
-              <ul class="list">
-                <li>
-                  <div class="list-time">אתמול</div>
-                  <div class="list-main">
-                    <div class="list-title">חוסר בתחמושת 9mm</div>
-                    <div class="list-subtitle">נשארו 23 קופסאות במחסן</div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-time">השבוע</div>
-                  <div class="list-main">
-                    <div class="list-title">3 לידים מחכים לחזרה</div>
-                    <div class="list-subtitle">מקור: פייסבוק / אינסטה</div>
-                  </div>
-                </li>
-                <li>
-                  <div class="list-time">השבוע</div>
-                  <div class="list-main">
-                    <div class="list-title">קורס מתקדם כמעט מלא</div>
-                    <div class="list-subtitle">מקומות אחרונים למחזור 6</div>
-                  </div>
-                </li>
-              </ul>
+              <div class="card-title">קורסים קרובים</div>
+              <p>רשימת קורסים / אימונים בשבוע הקרוב.</p>
             </div>
           </div>
         </section>
 
-        <!-- יומן / לוח שנה -->
+        <!-- יומן -->
         <section id="calendar" class="section">
           <div class="card">
-            <div class="card-header-row">
-              <div class="card-title">יומן / לוח שנה</div>
-              <div class="calendar-nav">
-                <button id="prevMonthBtn" class="ghost-button">חודש קודם</button>
-                <div id="calendarTitle" class="calendar-title"></div>
-                <button id="nextMonthBtn" class="ghost-button">חודש הבא</button>
-              </div>
+            <div class="card-title">יומן / לוח שנה</div>
+            <div class="calendar-header">
+              <button id="prevMonthBtn" class="calendar-nav">&lt;</button>
+              <div id="calendarTitle" class="calendar-title"></div>
+              <button id="nextMonthBtn" class="calendar-nav">&gt;</button>
             </div>
             <div id="calendarGrid" class="calendar-grid"></div>
-          </div>
 
-          <div class="card">
-            <div class="card-title">הוספת אימון / קורס ביומן</div>
-            <form id="eventForm" class="form-row">
-              <div class="form-group">
-                <label for="eventType">סוג</label>
+            <form id="eventForm" class="calendar-form">
+              <h3>הוספת אירוע</h3>
+              <div class="form-row">
+                <label>סוג</label>
                 <select id="eventType">
                   <option value="course">קורס</option>
-                  <option value="training">אימון חד־יומי</option>
+                  <option value="training">אימון חד יומי</option>
                 </select>
               </div>
-              <div class="form-group">
-                <label for="eventTitle">שם האימון / קורס</label>
-                <input id="eventTitle" type="text" placeholder="למשל: יסודות אקדח – מפגש 3" />
+              <div class="form-row">
+                <label>שם האירוע</label>
+                <input id="eventTitle" type="text" />
               </div>
-              <div class="form-group">
-                <label for="eventDate">תאריך</label>
+              <div class="form-row">
+                <label>תאריך</label>
                 <input id="eventDate" type="date" />
               </div>
-              <div class="form-actions">
-                <button type="submit" class="primary-button">שמור ביומן</button>
-              </div>
+              <button type="submit">שמור אירוע</button>
             </form>
-          </div>
-        </section>
-
-        <!-- לקוחות -->
-        <section id="clients" class="section">
-          <div class="card">
-            <div class="card-title">לקוחות</div>
-            <p>כאן יהיה ניהול לקוחות קיימים (בהמשך נחבר ל־DB).</p>
-          </div>
-        </section>
-
-        <!-- לידים -->
-        <section id="leads" class="section">
-          <div class="card">
-            <div class="card-title">לידים</div>
-            <p>כאן נבנה מסך לידים אמיתי כולל שמירה ל־PostgreSQL.</p>
-          </div>
-        </section>
-
-        <!-- קורסים -->
-        <section id="courses" class="section">
-          <div class="card">
-            <div class="card-title">קורסים</div>
-          <p>כאן ננהל את רשימת הקורסים, מחירים ומחזורים.</p>
-          </div>
-        </section>
-
-        <!-- מדריכים -->
-        <section id="instructors" class="section">
-          <div class="card">
-            <div class="card-title">מדריכים</div>
-            <p>כאן ננהל מדריכים, זמינות ושיבוצים.</p>
           </div>
         </section>
 
@@ -230,95 +101,100 @@
         <section id="finance" class="section">
           <div class="cards-row">
             <div class="card">
-              <div class="card-title">הכנסות</div>
-              <div id="totalIncome" class="card-main-number">₪ 0</div>
-              <div id="incomeCountLabel" class="card-subtext">0 תנועות הכנסה</div>
+              <div class="card-title">סיכום פיננסי</div>
+              <div class="finance-summary">
+                <div>
+                  <div class="finance-label">הכנסות</div>
+                  <div id="totalIncome" class="finance-value">₪ 0</div>
+                  <div id="incomeCountLabel" class="finance-small"></div>
+                </div>
+                <div>
+                  <div class="finance-label">הוצאות</div>
+                  <div id="totalExpense" class="finance-value">₪ 0</div>
+                  <div id="expenseCountLabel" class="finance-small"></div>
+                </div>
+                <div>
+                  <div class="finance-label">רווח נקי</div>
+                  <div id="netProfit" class="finance-value">₪ 0</div>
+                  <div id="profitMarginLabel" class="finance-small"></div>
+                </div>
+              </div>
             </div>
+
             <div class="card">
-              <div class="card-title">הוצאות</div>
-              <div id="totalExpense" class="card-main-number">₪ 0</div>
-              <div id="expenseCountLabel" class="card-subtext">0 תנועות הוצאה</div>
-            </div>
-            <div class="card">
-              <div class="card-title">רווח נקי</div>
-              <div id="netProfit" class="card-main-number">₪ 0</div>
-              <div id="profitMarginLabel" class="card-subtext">0% מרווחיות</div>
+              <div class="card-title">תנועות</div>
+              <ul id="financeList" class="finance-list"></ul>
             </div>
           </div>
 
-          <div class="split-row">
-            <div class="card">
-              <div class="card-title">תנועות אחרונות</div>
-              <ul id="financeList" class="list"></ul>
-            </div>
-
-            <div class="card">
-              <div class="card-title">הוספת תנועה</div>
-              <form id="financeForm" class="form-column">
-                <div class="form-group">
-                  <label for="financeDirection">סוג תנועה</label>
-                  <select id="financeDirection">
-                    <option value="income">הכנסה</option>
-                    <option value="expense">הוצאה</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="financeType">סוג</label>
-                  <select id="financeType">
-                    <option value="קורס בסיסי">קורס בסיסי</option>
-                    <option value="קורס מתקדם">קורס מתקדם</option>
-                    <option value="אימון ערב">אימון ערב</option>
-                    <option value="תחמושת">תחמושת</option>
-                    <option value="שכר מדריכים">שכר מדריכים</option>
-                    <option value="אחר">אחר</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="financeAmount">סכום (₪)</label>
-                  <input id="financeAmount" type="number" min="0" />
-                </div>
-                <div class="form-group">
-                  <label for="financeDate">תאריך</label>
-                  <input id="financeDate" type="date" />
-                </div>
-                <div class="form-group">
-                  <label for="financeNote">הערה</label>
-                  <input id="financeNote" type="text" placeholder="למשל: מחזור 12 / מדריכים נוספים" />
-                </div>
-                <div class="form-actions">
-                  <button type="submit" class="primary-button">שמור תנועה</button>
-                </div>
-              </form>
-            </div>
+          <div class="card">
+            <div class="card-title">הוספת תנועה</div>
+            <form id="financeForm" class="finance-form">
+              <div class="form-row">
+                <label>כיוון</label>
+                <select id="financeDirection">
+                  <option value="income">הכנסה</option>
+                  <option value="expense">הוצאה</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>סוג</label>
+                <select id="financeType">
+                  <option value="קורס בסיסי">קורס בסיסי</option>
+                  <option value="קורס מתקדם">קורס מתקדם</option>
+                  <option value="אימון ערב">אימון ערב</option>
+                  <option value="תחמושת">תחמושת</option>
+                  <option value="שכר מדריכים">שכר מדריכים</option>
+                  <option value="אחר">אחר</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>סכום</label>
+                <input id="financeAmount" type="number" />
+              </div>
+              <div class="form-row">
+                <label>תאריך</label>
+                <input id="financeDate" type="date" />
+              </div>
+              <div class="form-row">
+                <label>הערה</label>
+                <input id="financeNote" type="text" />
+              </div>
+              <button type="submit">שמור</button>
+            </form>
           </div>
         </section>
 
-        <!-- משימות -->
+        <!-- שאר הסקשנים כרגע ריקים – רק placeholders -->
+        <section id="clients" class="section">
+          <div class="card"><div class="card-title">לקוחות</div>בקרוב נבנה פה טבלת לקוחות.</div>
+        </section>
+
+        <section id="leads" class="section">
+          <div class="card"><div class="card-title">לידים</div>בקרוב נבנה פה ניהול פניות.</div>
+        </section>
+
+        <section id="courses" class="section">
+          <div class="card"><div class="card-title">קורסים</div>ניהול קורסים ומחזורים – נבנה בהמשך.</div>
+        </section>
+
+        <section id="instructors" class="section">
+          <div class="card"><div class="card-title">מדריכים</div>ניהול מדריכים ושיבוצים – נבנה בהמשך.</div>
+        </section>
+
         <section id="tasks" class="section">
-          <div class="card">
-            <div class="card-title">משימות</div>
-            <p>כאן ננהל משימות פתוחות לפי תאריכים ואחראי.</p>
-          </div>
+          <div class="card"><div class="card-title">משימות</div>לוח משימות – נבנה בהמשך.</div>
         </section>
 
-        <!-- דוחות -->
         <section id="reports" class="section">
-          <div class="card">
-            <div class="card-title">דוחות</div>
-            <p>כאן יוצגו דוחות חודשיים/שבועיים על פעילות העסק.</p>
-          </div>
+          <div class="card"><div class="card-title">דוחות</div>דוחות חודשיים/שבועיים – נבנה בהמשך.</div>
         </section>
 
-        <!-- הגדרות -->
         <section id="settings" class="section">
-          <div class="card">
-            <div class="card-title">הגדרות מערכת</div>
-            <p>כאן יהיו הגדרות משתמשים, סוגי קורסים ותצורת מערכת.</p>
-          </div>
+          <div class="card"><div class="card-title">הגדרות מערכת</div>ניהול סוגי קורסים, משתמשים ועוד.</div>
         </section>
-
-      </section>
-    </main>
+      </main>
+    </div>
   </div>
 
   <script src="app.js"></script>
