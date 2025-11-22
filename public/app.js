@@ -518,3 +518,133 @@ async function deleteLead(id) {
     await apiFetch("/api/leads/" + id, { method: "DELETE" });
     await loadLeads();
     alert("הליד נמחק");
+  } catch (err) {
+    console.error(err);
+    alert("שגיאה במחיקה: " + err.message);
+  }
+}
+
+function setupLeadForm() {
+  const form = document.getElementById("leadForm");
+  const resetBtn = document.getElementById("leadResetBtn");
+  if (!form) return;
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      clearLeadForm();
+    });
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("leadId").value;
+    const full_name = document.getElementById("leadName").value.trim();
+    const phone = document.getElementById("leadPhone").value.trim();
+    const email = document.getElementById("leadEmail").value.trim();
+    const source = document.getElementById("leadSource").value.trim();
+    const status = document.getElementById("leadStatusSelect").value;
+    const handler_user_id = document.getElementById("leadHandlerSelect").value;
+    const note = document.getElementById("leadNote").value.trim();
+
+    if (!full_name) {
+      alert("שם מלא חובה");
+      return;
+    }
+    if (!status) {
+      alert("סטטוס חובה");
+      return;
+    }
+
+    const payload = {
+      full_name,
+      phone: phone || null,
+      email: email || null,
+      source: source || null,
+      status,
+      handler_user_id: handler_user_id ? Number(handler_user_id) : null,
+      note: note || null
+    };
+
+    try {
+      if (id) {
+        await apiFetch("/api/leads/" + id, { method: "PUT", body: payload });
+        alert("הליד עודכן");
+      } else {
+        await apiFetch("/api/leads", { method: "POST", body: payload });
+        alert("ליד חדש נשמר");
+      }
+
+      clearLeadForm();
+      await loadLeads();
+    } catch (err) {
+      console.error(err);
+      alert("שגיאה בשמירת ליד: " + err.message);
+    }
+  });
+}
+
+// =====================
+// גיבוי ידני
+// =====================
+
+function setupBackupButton() {
+  const btn = document.getElementById("manualBackupBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    try {
+      if (!requireAuth()) return;
+      const token = getToken();
+
+      const res = await fetch(API_BASE + "/api/backup/export", {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        const msg =
+          (data && data.error) || "שגיאה בהורדת גיבוי, נסה שוב מאוחר יותר";
+        throw new Error(msg);
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "elad_crm_backup.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("שגיאה בהורדת גיבוי: " + err.message);
+    }
+  });
+}
+
+// =====================
+// Init
+// =====================
+
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!requireAuth()) return;
+
+  setupNavigation();
+  setupLogout();
+  setupFinanceForm();
+  setupCalendarControls();
+  setupEventForm();
+  setupLeadForm();
+  setupBackupButton();
+
+  await Promise.all([
+    loadFinance(),
+    loadCalendarEvents(),
+    loadLeadHandlers(),
+    loadLeads()
+  ]);
+});
