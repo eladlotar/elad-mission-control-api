@@ -1,11 +1,29 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const { Pool } = require("pg");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ===== משתמש יחיד כרגע – אלעד =====
+// ===== חיבור ל-PostgreSQL =====
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+// בדיקת חיבור ל-DB
+async function testDB() {
+  try {
+    await pool.query("SELECT NOW()");
+    console.log("DB Connected OK!");
+  } catch (err) {
+    console.error("DB ERROR:", err.message);
+  }
+}
+testDB();
+
+// ===== אימות בסיסי בינתיים =====
 const USERS = [
   {
     email: "elad@eladlotar.com",
@@ -18,51 +36,31 @@ const USERS = [
 app.use(cors());
 app.use(express.json());
 
-// הגשת קבצים סטטיים מתוך public
+// הגשת קבצים סטטיים
 app.use(express.static(path.join(__dirname, "public")));
 
-// שורש האתר תמיד יפנה למסך התחברות
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
-});
-
-// API לוגין – מייל + סיסמה
+// API לוגין – דמה זמני
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body || {};
+  const user = USERS.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+  if (!user) return res.status(401).json({ success: false, message: "אימייל או סיסמה שגויים" });
 
-  if (!email || !password) {
-    return res
-      .status(400)
-      .json({ success: false, message: "חסר אימייל או סיסמה" });
+  return res.json({ success: true, user: { email: user.email, name: user.name } });
+});
+
+// API בדיקת DB
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const data = await pool.query("SELECT NOW()");
+    res.json({ db: "connected", time: data.rows[0].now });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const user = USERS.find(
-    (u) =>
-      u.email.toLowerCase() === String(email).toLowerCase() &&
-      u.password === password
-  );
-
-  if (!user) {
-    return res
-      .status(401)
-      .json({ success: false, message: "אימייל או סיסמה שגויים" });
-  }
-
-  const safeUser = {
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  };
-
-  return res.json({ success: true, user: safeUser });
 });
 
-// בדיקת בריאות
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+// כל Route אחר → דשבורד
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// הפעלת השרת
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log("Server running on", PORT));
