@@ -9,7 +9,6 @@
 </head>
 <body>
   <div class="layout">
-    <!-- צד ימין – סיידבר -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <img src="elad-logo-black-trans.png" alt="ELAD" class="sidebar-logo" />
@@ -38,7 +37,6 @@
       </div>
     </aside>
 
-    <!-- צד שמאל – תוכן -->
     <main class="main">
       <header class="main-header">
         <div>
@@ -54,7 +52,6 @@
         </div>
       </header>
 
-      <!-- סקשן: דשבורד -->
       <section id="dashboard" class="section active">
         <div class="cards-grid">
           <div class="card">
@@ -84,7 +81,6 @@
         </div>
       </section>
 
-      <!-- סקשן: יומן -->
       <section id="calendar" class="section">
         <div class="panel">
           <div class="panel-header">
@@ -122,7 +118,6 @@
         </div>
       </section>
 
-      <!-- סקשן: פיננסים -->
       <section id="finance" class="section">
         <div class="panel">
           <div class="panel-header">
@@ -165,7 +160,6 @@
         </div>
       </section>
 
-      <!-- סקשנים אחרים (לקוחות, לידים וכו') – בונים מאוחר יותר -->
       <section id="clients" class="section">
         <div class="panel">
           <div class="panel-header">
@@ -178,9 +172,60 @@
       <section id="leads" class="section">
         <div class="panel">
           <div class="panel-header">
-            <h2>לידים</h2>
+            <h2>לידים / מתעניינים</h2>
           </div>
-          <p>ניהול לידים וסטטוס סגירה – יבוא בשלבים הבאים.</p>
+
+          <form id="leadForm" class="form">
+            <input type="hidden" id="leadId" />
+            <div class="form-row">
+              <label>שם מלא</label>
+              <input id="leadName" type="text" placeholder="שם המתעניין" />
+            </div>
+            <div class="form-row">
+              <label>טלפון</label>
+              <input id="leadPhone" type="tel" placeholder="05x-xxxxxxx" />
+            </div>
+            <div class="form-row">
+              <label>אימייל</label>
+              <input id="leadEmail" type="email" placeholder="example@mail.com" />
+            </div>
+            <div class="form-row">
+              <label>מקור ליד</label>
+              <input id="leadSource" type="text" placeholder="אינסטגרם / המלצה / קמפיין" />
+            </div>
+            <div class="form-row">
+              <label>גורם מטפל</label>
+              <select id="leadHandlerSelect">
+                <option value="">בחר גורם מטפל</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>סטטוס</label>
+              <select id="leadStatusSelect">
+                <option value="לא ענה פעם 1">לא ענה פעם 1</option>
+                <option value="לא ענה פעם 2">לא ענה פעם 2</option>
+                <option value="לא ענה פעם 3">לא ענה פעם 3</option>
+                <option value="פלואפ">פלואפ</option>
+                <option value="לא סגר">לא סגר</option>
+                <option value="סגר">סגר</option>
+                <option value="מתלבט">מתלבט</option>
+                <option value="ביקש לחזור אליו במועד אחר">ביקש לחזור אליו במועד אחר</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>הערות</label>
+              <input id="leadNote" type="text" placeholder="פרטים מהשיחה / דברים לזכור" />
+            </div>
+            <button type="submit" class="btn-primary" id="leadSubmitBtn">שמור ליד</button>
+            <button type="button" class="btn-secondary" id="leadResetBtn">ניקוי טופס</button>
+          </form>
+
+          <div class="panel" style="margin-top: 24px;">
+            <div class="panel-header">
+              <h3>רשימת לידים אחרונים</h3>
+            </div>
+            <ul id="leadList" class="list"></ul>
+          </div>
         </div>
       </section>
 
@@ -225,7 +270,20 @@
           <div class="panel-header">
             <h2>הגדרות מערכת</h2>
           </div>
-          <p>כאן ננהל משתמשים, הרשאות, סוגי קורסים וכו'.</p>
+          <p>כאן ננהל משתמשים, הרשאות, סוגי קורסים ועוד.</p>
+
+          <div class="panel" style="margin-top: 24px;">
+            <div class="panel-header">
+              <h3>גיבוי נתונים</h3>
+            </div>
+            <p>
+              כפתור זה יוריד קובץ JSON עם הנתונים העיקריים של המערכת (לידים, תנועות פיננסיות, יומן).
+              מומלץ לשמור את הקובץ בדרייב / גיבוי ענן.
+            </p>
+            <button id="manualBackupBtn" class="btn-secondary">
+              הורדת גיבוי ידני (JSON)
+            </button>
+          </div>
         </div>
       </section>
     </main>
