@@ -1,69 +1,3 @@
-// ===== בדיקת התחברות =====
-const userJson = localStorage.getItem("crmUser");
-const isLoginPage = window.location.pathname.includes("login.html");
-
-if (!isLoginPage && !userJson) {
-  window.location.href = "/login.html";
-}
-// האם אנחנו בעמוד לוגין?
-const currentPath = window.location.pathname;
-const isLoginPage =
-  currentPath.endsWith("login.html") ||
-  currentPath.endsWith("/login") ||
-  currentPath === "/login.html" ||
-  currentPath === "/login";
-
-// אם זה לא עמוד לוגין – לוודא שיש משתמש מחובר
-if (!isLoginPage) {
-  const storedUser = localStorage.getItem("crmUser");
-  if (!storedUser) {
-    window.location.href = "/login.html";
-  }
-}
-
-// טיפול בטופס לוגין (אם אנחנו בעמוד לוגין)
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passwordInput ? passwordInput.value.trim() : "";
-
-    if (!email || !password) {
-      alert("תכניס אימייל וסיסמה");
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        alert(data.message || "אימייל או סיסמה שגויים");
-        return;
-      }
-
-      // שמירת המשתמש המחובר
-      localStorage.setItem("crmUser", JSON.stringify(data.user));
-
-      // מעבר לדשבורד
-      window.location.href = "/index.html";
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("שגיאה בשרת, נסה שוב בעוד רגע");
-    }
-  });
-}
-
 // ===== ניווט בין סקשנים =====
 const navItems = document.querySelectorAll(".nav-item");
 const sections = document.querySelectorAll(".section");
@@ -140,9 +74,7 @@ navItems.forEach((item) => {
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
-    // מחיקת המשתמש מה-localStorage
     localStorage.removeItem("crmUser");
-    // חזרה למסך התחברות
     window.location.href = "/login.html";
   });
 }
