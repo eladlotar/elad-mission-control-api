@@ -1,12 +1,13 @@
-// server.js – ELAD CRM API (גרסת התחלה מחוברת ל-Postgres)
+// server.js – ELAD CRM API מחובר ל-Postgres ומוכן לדפדפן
 
 const express = require("express");
+const cors = require("cors");
 const { Pool } = require("pg");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// חיבור לבסיס הנתונים מ-Render דרך משתנה הסביבה DATABASE_URL
+// חיבור לבסיס הנתונים דרך DATABASE_URL מ-Render
 let pool = null;
 if (process.env.DATABASE_URL) {
   pool = new Pool({
@@ -18,9 +19,17 @@ if (process.env.DATABASE_URL) {
   console.warn("WARNING: DATABASE_URL is not set – API ירוץ בלי חיבור לדאטה");
 }
 
+// לאפשר לאתר שלך ב-Netlify לדבר עם השרת
+app.use(
+  cors({
+    origin: ["https://elad-crm.netlify.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+  })
+);
+
 app.use(express.json());
 
-// בדיקת חיים – לוודא שהשרת וה-DB חיים
+// בדיקת חיים
 app.get("/api/health", async (req, res) => {
   try {
     if (!pool) {
@@ -34,7 +43,7 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// דוגמת שמירת לקוח – בהמשך נהפוך את זה ללקוחות/לידים/חניכים אמיתיים
+// יצירת לקוח חדש
 app.post("/api/clients", async (req, res) => {
   if (!pool) {
     return res.status(500).json({ error: "db_not_configured" });
@@ -42,21 +51,21 @@ app.post("/api/clients", async (req, res) => {
 
   const { fullName, phone, email } = req.body;
 
-  // ולידציה בסיסית
   if (!fullName || typeof fullName !== "string" || fullName.trim().length < 2) {
     return res.status(400).json({ error: "fullName_required" });
   }
 
   try {
-    await pool.query(
-      `CREATE TABLE IF NOT EXISTS clients (
+    // לוודא שיש טבלה
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS clients (
         id SERIAL PRIMARY KEY,
         full_name TEXT NOT NULL,
         phone TEXT,
         email TEXT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );`
-    );
+      );
+    `);
 
     const result = await pool.query(
       `INSERT INTO clients (full_name, phone, email)
@@ -72,7 +81,7 @@ app.post("/api/clients", async (req, res) => {
   }
 });
 
-// קריאת כל הלקוחות השמורים
+// לקרוא את כל הלקוחות
 app.get("/api/clients", async (req, res) => {
   if (!pool) {
     return res.status(500).json({ error: "db_not_configured" });
