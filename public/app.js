@@ -1,5 +1,10 @@
-// ===== בדיקת התחברות / לוגין =====
+// ===== בדיקת התחברות =====
+const userJson = localStorage.getItem("crmUser");
+const isLoginPage = window.location.pathname.includes("login.html");
 
+if (!isLoginPage && !userJson) {
+  window.location.href = "/login.html";
+}
 // האם אנחנו בעמוד לוגין?
 const currentPath = window.location.pathname;
 const isLoginPage =
