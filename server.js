@@ -5,25 +5,13 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// משתמשים מורשים – תעדכן פה מיילים וסיסמאות
+// ===== משתמש יחיד כרגע – אלעד =====
 const USERS = [
   {
     email: "elad@eladlotar.com",
-    password: "5599Tapuach", // תחליף למה שאתה רוצה
+    password: "5599Tapuach",
     name: "אלעד אטיאס",
     role: "owner",
-  },
-  {
-    email: "instructor1@eladlotar.co.il",
-    password: "abcd1234",
-    name: "מדריך 1",
-    role: "instructor",
-  },
-  {
-    email: "instructor2@eladlotar.co.il",
-    password: "abcd5678",
-    name: "מדריך 2",
-    role: "instructor",
   },
 ];
 
