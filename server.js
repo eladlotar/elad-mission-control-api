@@ -44,12 +44,15 @@ app.post(
 
       const user = result.rows[0];
       const match = await bcrypt.compare(password, user.password_hash);
-      if (!match) return res.status(401).json({ error: "Invalid password" });
+      if (!match) {
+        return res.status(401).json({ error: "Invalid password" });
+      }
 
       const token = jwt.sign(
         { userId: user.id, role: user.role },
         process.env.JWT_SECRET
       );
+
       res.json({ token });
     } catch (err) {
       handleError(res, err);
@@ -78,7 +81,10 @@ function adminGuard(req, res, next) {
   next();
 }
 
-// רשימת משתמשים – כדי לבחור "גורם מטפל" בלידים
+// =====================
+// Users (לבחירת גורם מטפל בלידים)
+// =====================
+
 app.get("/api/users", authGuard, async (req, res) => {
   try {
     const result = await pool.query(
@@ -169,7 +175,7 @@ app.get("/api/calendar", authGuard, async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM calendar ORDER BY date ASC, id ASC LIMIT 500"
     );
-  res.json(result.rows);
+    res.json(result.rows);
   } catch (err) {
     handleError(res, err);
   }
