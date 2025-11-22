@@ -1,287 +1,158 @@
+require("dotenv").config();
 const express = require("express");
-const path = require("path");
 const cors = require("cors");
 const { Pool } = require("pg");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { body, validationResult } = require("express-validator");
 
 const app = express();
-const PORT = process.env.PORT || 10000;
-
-// ===== חיבור ל-PostgreSQL דרך ENV =====
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
-
-// ===== אתחול DB: בדיקה + יצירת טבלאות =====
-async function initDB() {
-  try {
-    await pool.query("SELECT NOW()");
-    console.log("✅ DB Connected OK");
-
-    // טבלת משתמשים
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        name TEXT NOT NULL,
-        role TEXT NOT NULL DEFAULT 'user',
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    // טבלת לקוחות
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS clients (
-        id SERIAL PRIMARY KEY,
-        full_name TEXT NOT NULL,
-        phone TEXT,
-        email TEXT,
-        source TEXT,
-        status TEXT DEFAULT 'active',
-        notes TEXT,
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    // טבלת לידים
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS leads (
-        id SERIAL PRIMARY KEY,
-        full_name TEXT NOT NULL,
-        phone TEXT,
-        email TEXT,
-        source TEXT,
-        status TEXT DEFAULT 'new',
-        notes TEXT,
-        converted_client_id INTEGER REFERENCES clients(id),
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    // טבלת קורסים
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS courses (
-        id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
-        type TEXT,
-        price NUMERIC,
-        is_active BOOLEAN DEFAULT TRUE,
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    // טבלת מדריכים
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS instructors (
-        id SERIAL PRIMARY KEY,
-        full_name TEXT NOT NULL,
-        phone TEXT,
-        email TEXT,
-        hourly_rate NUMERIC,
-        notes TEXT,
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    // טבלת אירועים ביומן
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS calendar_events (
-        id SERIAL PRIMARY KEY,
-        title TEXT NOT NULL,
-        event_type TEXT NOT NULL,        -- course / training / other
-        event_date DATE NOT NULL,
-        course_id INTEGER REFERENCES courses(id),
-        notes TEXT,
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    // טבלת פיננסים
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS finance_transactions (
-        id SERIAL PRIMARY KEY,
-        direction TEXT NOT NULL,         -- income / expense
-        tx_type TEXT NOT NULL,           -- קורס בסיסי, תחמושת וכו'
-        amount NUMERIC NOT NULL,
-        tx_date DATE NOT NULL,
-        note TEXT,
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    // לוודא שאלעד קיים כמשתמש OWNER
-    await pool.query(
-      `
-      INSERT INTO users (email, password, name, role)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (email) DO NOTHING;
-    `,
-      ["elad@eladlotar.com", "5599Tapuach", "אלעד אטיאס", "owner"]
-    );
-
-    console.log("✅ All tables ready (users/clients/leads/...)");
-  } catch (err) {
-    console.error("❌ initDB error:", err.message);
-  }
-}
-
-initDB();
-
 app.use(cors());
 app.use(express.json());
 
-// ===== סטטי – קבצי המערכת =====
-app.use(express.static(path.join(__dirname, "public")));
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
-// ===== API לוגין אמיתי מה-DB =====
-app.post("/api/login", async (req, res) => {
-  try {
-    const { email, password } = req.body || {};
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "חסר אימייל או סיסמה" });
+// Error handler – לכל ה־API
+function handleError(res, error) {
+  console.error("❌ Server Error:", error);
+  res.status(500).json({ error: "Server failed", details: error.message });
+}
+
+// =========================
+// Authentication
+// =========================
+
+// Login
+app.post("/api/auth/login",
+  body("email").isEmail().withMessage("Email format invalid"),
+  body("password").isLength({ min: 3 }).withMessage("Password too short"),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { email, password } = req.body;
+      const result = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
+
+      if (result.rows.length === 0) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      const user = result.rows[0];
+      const match = await bcrypt.compare(password, user.password_hash);
+      if (!match) return res.status(401).json({ error: "Invalid password" });
+
+      const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET);
+      res.json({ token });
+    } catch (err) {
+      handleError(res, err);
     }
+  }
+);
 
-    const result = await pool.query(
-      `
-      SELECT id, email, password, name, role
-      FROM users
-      WHERE LOWER(email) = LOWER($1)
-      LIMIT 1;
-    `,
-      [email]
-    );
+// Auth middleware
+function authGuard(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth) return res.status(401).json({ error: "No token" });
 
-    if (result.rows.length === 0) {
-      return res
-        .status(401)
-        .json({ success: false, message: "אימייל או סיסמה שגויים" });
+  const token = auth.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+}
+
+// =========================
+// Finance API
+// =========================
+
+// Create finance entry
+app.post("/api/finance",
+  authGuard,
+  body("direction").isIn(["income", "expense"]).withMessage("Direction invalid"),
+  body("type").isString().notEmpty().withMessage("Type required"),
+  body("amount").isFloat({ min: 0 }).withMessage("Amount must be positive"),
+  body("date").isISO8601().withMessage("Invalid date"),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { direction, type, amount, date, note } = req.body;
+      const result = await pool.query(
+        `INSERT INTO finance (direction, type, amount, date, note)
+         VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+        [direction, type, amount, date, note]
+      );
+      res.json(result.rows[0]);
+    } catch (err) {
+      handleError(res, err);
     }
+  }
+);
 
-    const user = result.rows[0];
+// Get finance list
+app.get("/api/finance", authGuard, async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM finance ORDER BY date DESC LIMIT 50");
+    res.json(result.rows);
+  } catch (err) {
+    handleError(res, err);
+  }
+});
 
-    if (user.password !== password) {
-      return res
-        .status(401)
-        .json({ success: false, message: "אימייל או סיסמה שגויים" });
+// =========================
+// Calendar API
+// =========================
+
+// Create event
+app.post("/api/calendar",
+  authGuard,
+  body("event_type").isIn(["course", "training"]).withMessage("Event type invalid"),
+  body("title").isString().notEmpty().withMessage("Title required"),
+  body("date").isISO8601().withMessage("Invalid date"),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { event_type, title, date } = req.body;
+      const result = await pool.query(
+        `INSERT INTO calendar (event_type, title, date)
+         VALUES ($1,$2,$3) RETURNING *`,
+        [event_type, title, date]
+      );
+      res.json(result.rows[0]);
+    } catch (err) {
+      handleError(res, err);
     }
-
-    const safeUser = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    };
-
-    return res.json({ success: true, user: safeUser });
-  } catch (err) {
-    console.error("login error:", err.message);
-    return res
-      .status(500)
-      .json({ success: false, message: "שגיאת שרת בלוגין" });
   }
-});
+);
 
-// ===== API DB Health =====
-app.get("/api/db-test", async (req, res) => {
+// Get events
+app.get("/api/calendar", authGuard, async (req, res) => {
   try {
-    const data = await pool.query("SELECT NOW()");
-    res.json({ db: "connected", time: data.rows[0].now });
+    const result = await pool.query("SELECT * FROM calendar ORDER BY date DESC LIMIT 200");
+    res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    handleError(res, err);
   }
 });
 
-// ===== API – CLIENTS =====
-
-// כל הלקוחות
-app.get("/api/clients", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT id, full_name, phone, email, source, status, notes, created_at FROM clients ORDER BY created_at DESC;"
-    );
-    res.json({ success: true, items: result.rows });
-  } catch (err) {
-    console.error("get clients error:", err.message);
-    res.status(500).json({ success: false, message: "שגיאה בשליפת לקוחות" });
-  }
-});
-
-// יצירת לקוח חדש
-app.post("/api/clients", async (req, res) => {
-  try {
-    const { full_name, phone, email, source, status, notes } = req.body || {};
-    if (!full_name) {
-      return res
-        .status(400)
-        .json({ success: false, message: "חסר שם לקוח" });
-    }
-
-    const result = await pool.query(
-      `
-      INSERT INTO clients (full_name, phone, email, source, status, notes)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, full_name, phone, email, source, status, notes, created_at;
-    `,
-      [full_name, phone || null, email || null, source || null, status || "active", notes || null]
-    );
-
-    res.status(201).json({ success: true, item: result.rows[0] });
-  } catch (err) {
-    console.error("create client error:", err.message);
-    res.status(500).json({ success: false, message: "שגיאה ביצירת לקוח" });
-  }
-});
-
-// ===== API – LEADS =====
-
-// כל הלידים
-app.get("/api/leads", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT id, full_name, phone, email, source, status, notes, created_at FROM leads ORDER BY created_at DESC;"
-    );
-    res.json({ success: true, items: result.rows });
-  } catch (err) {
-    console.error("get leads error:", err.message);
-    res.status(500).json({ success: false, message: "שגיאה בשליפת לידים" });
-  }
-});
-
-// יצירת ליד חדש
-app.post("/api/leads", async (req, res) => {
-  try {
-    const { full_name, phone, email, source, status, notes } = req.body || {};
-    if (!full_name) {
-      return res
-        .status(400)
-        .json({ success: false, message: "חסר שם לליד" });
-    }
-
-    const result = await pool.query(
-      `
-      INSERT INTO leads (full_name, phone, email, source, status, notes)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, full_name, phone, email, source, status, notes, created_at;
-    `,
-      [full_name, phone || null, email || null, source || null, status || "new", notes || null]
-    );
-
-    res.status(201).json({ success: true, item: result.rows[0] });
-  } catch (err) {
-    console.error("create lead error:", err.message);
-    res.status(500).json({ success: false, message: "שגיאה ביצירת ליד" });
-  }
-});
-
-// ===== כל Route אחר → הדשבורד =====
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// ===== הפעלת השרת =====
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// =========================
+// Server
+// =========================
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log("CRM API running on", PORT));
