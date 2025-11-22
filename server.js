@@ -8,8 +8,8 @@ const PORT = process.env.PORT || 10000;
 // משתמשים מורשים – תעדכן פה מיילים וסיסמאות
 const USERS = [
   {
-    email: "office@instructorelad.com",
-    password: "123456", // תחליף למה שאתה רוצה
+    email: "elad@eladlotar.com",
+    password: "5599Tapuach", // תחליף למה שאתה רוצה
     name: "אלעד אטיאס",
     role: "owner",
   },
