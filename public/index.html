@@ -391,4 +391,21 @@
 
   <script src="app.js"></script>
 </body>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const raw = localStorage.getItem("crmUser");
+    if (!raw) {
+      window.location.href = "/login.html";
+      return;
+    }
+    try {
+      const user = JSON.parse(raw);
+      if (!user || !user.email) {
+        window.location.href = "/login.html";
+      }
+    } catch (e) {
+      window.location.href = "/login.html";
+    }
+  });
+</script>
 </html>
