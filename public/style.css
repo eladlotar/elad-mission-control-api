@@ -2,110 +2,88 @@
   --blue: #1877f2;
   --blue-dark: #0f5bb5;
   --bg: #f3f4f6;
-  --bg-light: #ffffff;
-  --border-subtle: #e5e7eb;
+  --bg-soft: #ffffff;
+  --border: #e5e7eb;
   --text-main: #111827;
   --text-muted: #6b7280;
   --danger: #ef4444;
   --success: #16a34a;
 }
 
-/* reset בסיסי */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  direction: rtl;
 }
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Helvetica Neue", Arial, sans-serif;
+    sans-serif;
   background: var(--bg);
   color: var(--text-main);
-  direction: rtl;
-  text-align: right;
 }
 
-/* מבנה כללי */
+/* לייאאוט כללי */
 
-.app {
+.layout {
   display: flex;
   min-height: 100vh;
 }
 
-/* תפריט צד */
+/* סיידבר */
 
 .sidebar {
-  width: 260px;
+  width: 280px;
   background: #ffffff;
-  border-left: 1px solid var(--border-subtle);
-  padding: 16px 16px 24px;
+  border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  padding: 16px;
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-subtle);
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.sidebar-logo {
+  width: 72px;
+  height: auto;
 }
 
-.brand-title {
-  font-size: 18px;
+.sidebar-brand-text .brand-title {
   font-weight: 700;
+  font-size: 16px;
 }
 
-.brand-subtitle {
+.sidebar-brand-text .brand-subtitle {
   font-size: 12px;
   color: var(--text-muted);
 }
 
-/* ניווט */
-
-.nav {
+.sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 8px;
+  margin-bottom: auto;
 }
 
 .nav-item {
   border: none;
+  text-align: right;
+  padding: 10px 12px;
+  border-radius: 8px;
   background: transparent;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 10px;
-  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
   color: var(--text-muted);
-  text-align: right;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
-}
-
-.nav-item .nav-icon {
-  font-size: 18px;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .nav-item:hover {
-  background: #f4f6fb;
+  background: #f3f4ff;
   color: var(--text-main);
-  transform: translateY(-1px);
 }
 
 .nav-item.active {
@@ -113,60 +91,68 @@ body {
   color: #ffffff;
 }
 
-/* אזור מרכזי */
-
-.main {
-  flex: 1;
-  padding: 18px 22px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* טופבר */
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-.topbar-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.page-title {
-  font-size: 22px;
-}
-
-.page-subtitle {
-  font-size: 13px;
+.sidebar-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: 10px;
+  font-size: 12px;
   color: var(--text-muted);
 }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.logout-btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #fee2e2;
+  color: #b91c1c;
+  cursor: pointer;
+  margin-bottom: 6px;
+  font-size: 13px;
 }
 
-.user-info {
+/* אזור ראשי */
+
+.main {
+  flex: 1;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.page-subtitle {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* כרטיס משתמש */
+
+.user-chip {
   display: flex;
   align-items: center;
   gap: 8px;
   background: #ffffff;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid var(--border-subtle);
-  direction: rtl;
+  border: 1px solid var(--border);
 }
 
 .user-avatar {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
   background: var(--blue);
   color: #ffffff;
@@ -176,16 +162,8 @@ body {
   font-weight: 600;
 }
 
-.user-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  text-align: right;
-}
-
 .user-name {
   font-size: 13px;
-  font-weight: 600;
 }
 
 .user-role {
@@ -193,221 +171,168 @@ body {
   color: var(--text-muted);
 }
 
-/* כפתורים כלליים */
-
-.primary-btn {
-  border: none;
-  background: var(--blue);
-  color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.primary-btn:hover {
-  background: var(--blue-dark);
-}
-
-.secondary-btn {
-  border: 1px solid var(--border-subtle);
-  background: #ffffff;
-  color: var(--text-main);
-  padding: 6px 12px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.secondary-btn:hover {
-  background: #f4f6fb;
-}
-
 /* סקשנים */
 
 .section {
   display: none;
-  flex-direction: column;
-  gap: 16px;
 }
 
 .section.active {
-  display: flex;
+  display: block;
 }
 
-.section-header h2 {
-  font-size: 20px;
-  margin-bottom: 4px;
-}
-
-.section-header p {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-/* כרטיסים / גרידים */
-
-.cards-row {
-  display: flex;
-  flex-wrap: wrap;
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+  margin-bottom: 16px;
 }
 
 .card {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 14px 16px;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
 }
 
-.kpi-card {
-  min-width: 200px;
-  flex: 1;
-}
-
-.card-label {
-  font-size: 12px;
+.card-title {
+  font-size: 13px;
   color: var(--text-muted);
   margin-bottom: 6px;
 }
 
 .card-value {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
-.card-trend {
+.card-label {
   font-size: 12px;
   color: var(--text-muted);
 }
 
-.card-trend.positive {
-  color: var(--success);
+/* פאנלים */
+
+.panel {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 16px;
 }
 
-.card-trend.negative {
-  color: var(--danger);
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.card-header {
+.panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.card-title {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.card-badge {
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: #eef2ff;
-  color: #4f46e5;
-}
-
-/* גרף ברים פשוט */
-
-.chart-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.chart-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-}
-
-.chart-label {
-  width: 120px;
-  white-space: nowrap;
-}
-
-.chart-bar-wrap {
-  flex: 1;
-  background: #f3f4f6;
-  border-radius: 999px;
-  overflow: hidden;
-  height: 10px;
-}
-
-.chart-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--blue), var(--blue-dark));
-  border-radius: 999px;
-}
-
-.chart-value {
-  width: 80px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
+.panel-header h2 {
+  margin: 0;
+  font-size: 16px;
 }
 
 /* רשימות */
 
-.simple-list {
+.list {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  padding: 0;
+  margin: 0;
 }
 
-.simple-list li {
+.list li {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.list li:last-child {
+  border-bottom: none;
 }
 
 .list-time {
-  font-size: 12px;
-  font-weight: 600;
+  min-width: 90px;
   color: var(--text-muted);
-  min-width: 60px;
 }
 
 .list-main {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex: 1;
 }
 
 .list-title {
-  font-size: 13px;
+  font-weight: 600;
 }
 
 .list-subtitle {
-  font-size: 12px;
   color: var(--text-muted);
 }
 
-/* כרטיסי placeholder */
+/* טפסים */
 
-.placeholder-card {
-  background: #ffffff;
-  border-radius: 14px;
-  border: 1px dashed var(--border-subtle);
-  padding: 16px;
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   font-size: 13px;
+}
+
+.form-row label {
   color: var(--text-muted);
 }
 
-/* יומן / לוח שנה */
+input,
+select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 13px;
+}
 
-.calendar-header {
+/* כפתורים */
+
+.btn-primary {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: var(--blue);
+  color: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: var(--blue-dark);
+}
+
+.btn-secondary {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* יומן */
+
+.calendar-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.calendar-controls {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -415,163 +340,67 @@ body {
 }
 
 .calendar-title {
-  font-size: 16px;
   font-weight: 600;
 }
 
-.calendar-btn {
-  border: none;
-  background: #ffffff;
-  border-radius: 999px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: 1px solid var(--border-subtle);
-  font-size: 16px;
-}
-
-.calendar-btn:hover {
-  background: #f4f6fb;
-}
-
 .calendar-grid {
-  margin-top: 10px;
-  background: #ffffff;
-  border-radius: 14px;
-  border: 1px solid var(--border-subtle);
-  padding: 10px;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
-  font-size: 11px;
 }
 
 .calendar-cell {
-  min-height: 60px;
+  min-height: 58px;
+  background: #f9fafb;
   border-radius: 8px;
-  padding: 4px;
-  border: 1px solid transparent;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+  padding: 4px 5px;
+  font-size: 11px;
 }
 
 .calendar-cell.header {
+  background: transparent;
   text-align: center;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.calendar-cell.day {
-  cursor: pointer;
-  background: #f9fafb;
-}
-
-.calendar-cell.day:hover {
-  border-color: var(--blue);
-}
-
-.calendar-cell .day-number {
-  font-size: 11px;
+.day-number {
   font-weight: 600;
-}
-
-.calendar-event-dot {
-  margin-top: 2px;
-  font-size: 10px;
-  padding: 2px 4px;
-  border-radius: 999px;
-  background: #dcfce7;
-  color: #166534;
-}
-
-/* טפסים (יומן + פיננסים) */
-
-.calendar-form {
-  margin-top: 10px;
-}
-
-.form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 10px;
-}
-
-.form-row label {
-  font-size: 12px;
-}
-
-.form-row input,
-.form-row select {
-  border-radius: 8px;
-  border: 1px solid var(--border-subtle);
-  padding: 6px 8px;
-  font-size: 13px;
-}
-
-.form-hint {
-  margin-top: 6px;
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* מסך התחברות */
-
-.login-body {
-  min-height: 100vh;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.login-wrapper {
-  max-width: 380px;
-  width: 100%;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px 20px 20px;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-}
-
-.login-title {
-  font-size: 20px;
   margin-bottom: 4px;
 }
 
-.login-subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 16px;
-}
-
-.login-footer {
-  margin-top: 12px;
+.calendar-event-dot {
   font-size: 11px;
-  color: var(--text-muted);
+  background: #e0f2fe;
+  border-radius: 4px;
+  padding: 2px 3px;
+  margin-top: 2px;
 }
 
-/* רספונסיביות */
+/* רספונסיבי */
 
 @media (max-width: 900px) {
-  .sidebar {
-    display: none;
-  }
-
-  .app {
+  .layout {
     flex-direction: column;
   }
 
-  .main {
-    padding: 12px;
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
   }
 
-  .grid-2 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .main {
+    padding: 16px;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
   }
 }
