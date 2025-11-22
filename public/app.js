@@ -1,4 +1,65 @@
-// ניווט בין סקשנים
+// ===== בדיקת התחברות / לוגין =====
+
+// האם אנחנו בעמוד לוגין?
+const currentPath = window.location.pathname;
+const isLoginPage =
+  currentPath.endsWith("login.html") ||
+  currentPath.endsWith("/login") ||
+  currentPath === "/login.html" ||
+  currentPath === "/login";
+
+// אם זה לא עמוד לוגין – לוודא שיש משתמש מחובר
+if (!isLoginPage) {
+  const storedUser = localStorage.getItem("crmUser");
+  if (!storedUser) {
+    window.location.href = "/login.html";
+  }
+}
+
+// טיפול בטופס לוגין (אם אנחנו בעמוד לוגין)
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+
+    const email = emailInput ? emailInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value.trim() : "";
+
+    if (!email || !password) {
+      alert("תכניס אימייל וסיסמה");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.message || "אימייל או סיסמה שגויים");
+        return;
+      }
+
+      // שמירת המשתמש המחובר
+      localStorage.setItem("crmUser", JSON.stringify(data.user));
+
+      // מעבר לדשבורד
+      window.location.href = "/index.html";
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("שגיאה בשרת, נסה שוב בעוד רגע");
+    }
+  });
+}
+
+// ===== ניווט בין סקשנים =====
 const navItems = document.querySelectorAll(".nav-item");
 const sections = document.querySelectorAll(".section");
 const pageTitleEl = document.querySelector(".page-title");
@@ -8,44 +69,44 @@ const pageSubtitleEl = document.querySelector(".page-subtitle");
 const sectionTitles = {
   dashboard: {
     title: "עמוד הבית",
-    subtitle: "סקירה מהירה על העסק שלך"
+    subtitle: "סקירה מהירה על העסק שלך",
   },
   calendar: {
     title: "יומן / לוח שנה",
-    subtitle: "ניהול קורסים ואימונים לפי תאריכים"
+    subtitle: "ניהול קורסים ואימונים לפי תאריכים",
   },
   clients: {
     title: "לקוחות",
-    subtitle: "ניהול לקוחות קיימים ולקוחות חוזרים"
+    subtitle: "ניהול לקוחות קיימים ולקוחות חוזרים",
   },
   leads: {
     title: "לידים",
-    subtitle: "מעקב אחרי פניות חדשות והתקדמות לסגירה"
+    subtitle: "מעקב אחרי פניות חדשות והתקדמות לסגירה",
   },
   courses: {
     title: "קורסים",
-    subtitle: "סוגי קורסים, מחזורים ומחירים"
+    subtitle: "סוגי קורסים, מחזורים ומחירים",
   },
   instructors: {
     title: "מדריכים",
-    subtitle: "שיבוץ מדריכים, שעות ותעריפים"
+    subtitle: "שיבוץ מדריכים, שעות ותעריפים",
   },
   finance: {
     title: "פיננסים",
-    subtitle: "הכנסות, הוצאות ורווחיות קורסים ואימונים"
+    subtitle: "הכנסות, הוצאות ורווחיות קורסים ואימונים",
   },
   tasks: {
     title: "משימות",
-    subtitle: "מה צריך לסגור היום ומי אחראי"
+    subtitle: "מה צריך לסגור היום ומי אחראי",
   },
   reports: {
     title: "דוחות",
-    subtitle: "סיכומים חודשיים ושבועיים"
+    subtitle: "סיכומים חודשיים ושבועיים",
   },
   settings: {
     title: "הגדרות מערכת",
-    subtitle: "משתמשים, סוגי קורסים ותצורת מערכת"
-  }
+    subtitle: "משתמשים, סוגי קורסים ותצורת מערכת",
+  },
 };
 
 navItems.forEach((item) => {
@@ -70,16 +131,18 @@ navItems.forEach((item) => {
   });
 });
 
-// כפתור התנתקות
+// ===== כפתור התנתקות =====
 const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn && window.netlifyIdentity) {
+if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
-    window.netlifyIdentity.logout();
+    // מחיקת המשתמש מה-localStorage
+    localStorage.removeItem("crmUser");
+    // חזרה למסך התחברות
     window.location.href = "/login.html";
   });
 }
 
-// יומן / לוח שנה – לוגיקה בסיסית
+// ===== יומן / לוח שנה – לוגיקה בסיסית =====
 const calendarTitle = document.getElementById("calendarTitle");
 const calendarGrid = document.getElementById("calendarGrid");
 const prevMonthBtn = document.getElementById("prevMonthBtn");
@@ -116,7 +179,7 @@ function buildCalendar(date) {
     "ספטמבר",
     "אוקטובר",
     "נובמבר",
-    "דצמבר"
+    "דצמבר",
   ];
 
   calendarTitle.textContent = `${monthNames[month]} ${year}`;
@@ -159,7 +222,9 @@ function buildCalendar(date) {
         const dot = document.createElement("div");
         dot.className = "calendar-event-dot";
         dot.textContent =
-          event.type === "course" ? "קורס: " + event.title : "אימון: " + event.title;
+          event.type === "course"
+            ? "קורס: " + event.title
+            : "אימון: " + event.title;
         cell.appendChild(dot);
       });
     }
@@ -170,12 +235,20 @@ function buildCalendar(date) {
 
 if (prevMonthBtn && nextMonthBtn) {
   prevMonthBtn.addEventListener("click", () => {
-    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    currentDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - 1,
+      1
+    );
     buildCalendar(currentDate);
   });
 
   nextMonthBtn.addEventListener("click", () => {
-    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+    currentDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      1
+    );
     buildCalendar(currentDate);
   });
 }
@@ -203,7 +276,7 @@ if (eventForm) {
 
     eventsStore[dateValue].push({
       type,
-      title
+      title,
     });
 
     titleInput.value = "";
@@ -216,7 +289,7 @@ if (eventForm) {
 
 buildCalendar(currentDate);
 
-// פיננסים – לוגיקה
+// ===== פיננסים – לוגיקה =====
 const totalIncomeEl = document.getElementById("totalIncome");
 const totalExpenseEl = document.getElementById("totalExpense");
 const netProfitEl = document.getElementById("netProfit");
@@ -232,36 +305,36 @@ let financeTransactions = [
     type: "קורס בסיסי",
     amount: 2400 * 5,
     date: "2025-11-10",
-    note: "קורס בסיסי – מחזור 12 (5 משתתפים)"
+    note: "קורס בסיסי – מחזור 12 (5 משתתפים)",
   },
   {
     direction: "income",
     type: "קורס מתקדם",
     amount: 2600 * 4,
     date: "2025-11-15",
-    note: "קורס מתקדם – 4 משתתפים"
+    note: "קורס מתקדם – 4 משתתפים",
   },
   {
     direction: "income",
     type: "אימון ערב",
     amount: 350 * 12,
     date: "2025-11-18",
-    note: "אימון ערב – קבוצה קבועה"
+    note: "אימון ערב – קבוצה קבועה",
   },
   {
     direction: "expense",
     type: "תחמושת",
     amount: 18400,
     date: "2025-11-12",
-    note: "105 קופסאות 9mm / 5.56"
+    note: "105 קופסאות 9mm / 5.56",
   },
   {
     direction: "expense",
     type: "שכר מדריכים",
     amount: 21600,
     date: "2025-11-20",
-    note: "4 מדריכים – שכר חודשי"
-  }
+    note: "4 מדריכים – שכר חודשי",
+  },
 ];
 
 function formatCurrency(amount) {
@@ -343,7 +416,8 @@ function renderFinanceList() {
     subtitleDiv.className = "list-subtitle";
     const sign = tx.direction === "income" ? "+" : "-";
     subtitleDiv.textContent =
-      `${sign}${formatCurrency(tx.amount)}` + (tx.note ? ` · ${tx.note}` : "");
+      `${sign}${formatCurrency(tx.amount)}` +
+      (tx.note ? ` · ${tx.note}` : "");
 
     mainDiv.appendChild(titleDiv);
     mainDiv.appendChild(subtitleDiv);
@@ -387,7 +461,7 @@ if (financeForm) {
       type,
       amount,
       date: dateValue,
-      note
+      note,
     };
 
     addFinanceTransaction(tx);
