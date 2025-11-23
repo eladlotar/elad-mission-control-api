@@ -15,6 +15,54 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+// =============== DB INIT – יצירת טבלאות אם לא קיימות ===============
+async function ensureTables() {
+  try {
+    // טבלת פיננסים
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS finance (
+        id SERIAL PRIMARY KEY,
+        direction TEXT NOT NULL,
+        type TEXT NOT NULL,
+        amount NUMERIC NOT NULL,
+        date DATE NOT NULL,
+        note TEXT
+      );
+    `);
+
+    // טבלת יומן
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS calendar (
+        id SERIAL PRIMARY KEY,
+        event_type TEXT NOT NULL,
+        title TEXT NOT NULL,
+        date DATE NOT NULL
+      );
+    `);
+
+    // טבלת לידים
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS leads (
+        id SERIAL PRIMARY KEY,
+        full_name TEXT NOT NULL,
+        phone TEXT,
+        email TEXT,
+        source TEXT,
+        status TEXT NOT NULL,
+        handler_user_id INTEGER REFERENCES users(id),
+        note TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `);
+
+    console.log("✅ DB tables ensured");
+  } catch (err) {
+    console.error("❌ DB init failed:", err);
+  }
+}
+ensureTables();
+// ===========================================================
+
 function handleError(res, error) {
   console.error("❌ Server Error:", error);
   res.status(500).json({ error: "Server failed", details: error.message });
