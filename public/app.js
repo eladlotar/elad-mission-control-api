@@ -1,24 +1,22 @@
 const API_BASE = "https://elad-mission-control-api.onrender.com";
 
+// ===== Auth helpers =====
+
 function getToken() {
   return localStorage.getItem("token");
 }
 
-function requireAuth() {
+function requireAuthSoft() {
   const token = getToken();
-  if (!token) {
-    window.location.href = "login.html";
-    return false;
-  }
-  return true;
+  return !!token;
 }
 
 async function apiFetch(path, options = {}) {
-  if (!requireAuth()) {
-    throw new Error("No auth");
+  const token = getToken();
+  if (!token) {
+    throw new Error("אין התחברות, אנא התחבר מחדש");
   }
 
-  const token = getToken();
   const opts = {
     method: options.method || "GET",
     headers: {
@@ -51,11 +49,19 @@ async function apiFetch(path, options = {}) {
   return data;
 }
 
+// =====================
+// ניווט ותפריט
+// =====================
+
 function setupNavigation() {
+  console.log("setupNavigation start");
   const navItems = document.querySelectorAll(".nav-item");
   const sections = document.querySelectorAll(".section");
   const pageTitle = document.querySelector(".page-title");
   const pageSubtitle = document.querySelector(".page-subtitle");
+
+  console.log("navItems found:", navItems.length);
+  console.log("sections found:", sections.length);
 
   const titles = {
     dashboard: {
@@ -103,6 +109,7 @@ function setupNavigation() {
   navItems.forEach((btn) => {
     btn.addEventListener("click", () => {
       const sectionId = btn.dataset.section;
+      console.log("nav click:", sectionId);
 
       navItems.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
@@ -129,6 +136,7 @@ function setupLogout() {
 
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("crmUser");
     window.location.href = "login.html";
   });
 }
@@ -481,33 +489,48 @@ function renderLeads() {
 }
 
 function clearLeadForm() {
-  document.getElementById("leadId").value = "";
-  document.getElementById("leadName").value = "";
-  document.getElementById("leadPhone").value = "";
-  document.getElementById("leadEmail").value = "";
-  document.getElementById("leadSource").value = "";
-  document.getElementById("leadStatusSelect").value = "לא ענה פעם 1";
-  document.getElementById("leadNote").value = "";
+  const idEl = document.getElementById("leadId");
+  const nameEl = document.getElementById("leadName");
+  const phoneEl = document.getElementById("leadPhone");
+  const emailEl = document.getElementById("leadEmail");
+  const sourceEl = document.getElementById("leadSource");
+  const statusEl = document.getElementById("leadStatusSelect");
+  const noteEl = document.getElementById("leadNote");
   const handlerSelect = document.getElementById("leadHandlerSelect");
-  if (handlerSelect) handlerSelect.value = "";
   const submitBtn = document.getElementById("leadSubmitBtn");
+
+  if (idEl) idEl.value = "";
+  if (nameEl) nameEl.value = "";
+  if (phoneEl) phoneEl.value = "";
+  if (emailEl) emailEl.value = "";
+  if (sourceEl) sourceEl.value = "";
+  if (statusEl) statusEl.value = "לא ענה פעם 1";
+  if (noteEl) noteEl.value = "";
+  if (handlerSelect) handlerSelect.value = "";
   if (submitBtn) submitBtn.textContent = "שמור ליד";
 }
 
 function fillLeadFormForEdit(lead) {
-  document.getElementById("leadId").value = lead.id;
-  document.getElementById("leadName").value = lead.full_name || "";
-  document.getElementById("leadPhone").value = lead.phone || "";
-  document.getElementById("leadEmail").value = lead.email || "";
-  document.getElementById("leadSource").value = lead.source || "";
-  document.getElementById("leadStatusSelect").value =
-    lead.status || "לא ענה פעם 1";
-  document.getElementById("leadNote").value = lead.note || "";
+  const idEl = document.getElementById("leadId");
+  const nameEl = document.getElementById("leadName");
+  const phoneEl = document.getElementById("leadPhone");
+  const emailEl = document.getElementById("leadEmail");
+  const sourceEl = document.getElementById("leadSource");
+  const statusEl = document.getElementById("leadStatusSelect");
+  const noteEl = document.getElementById("leadNote");
   const handlerSelect = document.getElementById("leadHandlerSelect");
+  const submitBtn = document.getElementById("leadSubmitBtn");
+
+  if (idEl) idEl.value = lead.id;
+  if (nameEl) nameEl.value = lead.full_name || "";
+  if (phoneEl) phoneEl.value = lead.phone || "";
+  if (emailEl) emailEl.value = lead.email || "";
+  if (sourceEl) sourceEl.value = lead.source || "";
+  if (statusEl) statusEl.value = lead.status || "לא ענה פעם 1";
+  if (noteEl) noteEl.value = lead.note || "";
   if (handlerSelect && lead.handler_user_id) {
     handlerSelect.value = String(lead.handler_user_id);
   }
-  const submitBtn = document.getElementById("leadSubmitBtn");
   if (submitBtn) submitBtn.textContent = "עדכן ליד";
 }
 
@@ -538,14 +561,23 @@ function setupLeadForm() {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const id = document.getElementById("leadId").value;
-    const full_name = document.getElementById("leadName").value.trim();
-    const phone = document.getElementById("leadPhone").value.trim();
-    const email = document.getElementById("leadEmail").value.trim();
-    const source = document.getElementById("leadSource").value.trim();
-    const status = document.getElementById("leadStatusSelect").value;
-    const handler_user_id = document.getElementById("leadHandlerSelect").value;
-    const note = document.getElementById("leadNote").value.trim();
+    const idEl = document.getElementById("leadId");
+    const nameEl = document.getElementById("leadName");
+    const phoneEl = document.getElementById("leadPhone");
+    const emailEl = document.getElementById("leadEmail");
+    const sourceEl = document.getElementById("leadSource");
+    const statusEl = document.getElementById("leadStatusSelect");
+    const handlerSelect = document.getElementById("leadHandlerSelect");
+    const noteEl = document.getElementById("leadNote");
+
+    const id = idEl ? idEl.value : "";
+    const full_name = nameEl ? nameEl.value.trim() : "";
+    const phone = phoneEl ? phoneEl.value.trim() : "";
+    const email = emailEl ? emailEl.value.trim() : "";
+    const source = sourceEl ? sourceEl.value.trim() : "";
+    const status = statusEl ? statusEl.value : "";
+    const handler_user_id = handlerSelect ? handlerSelect.value : "";
+    const note = noteEl ? noteEl.value.trim() : "";
 
     if (!full_name) {
       alert("שם מלא חובה");
@@ -594,8 +626,11 @@ function setupBackupButton() {
 
   btn.addEventListener("click", async () => {
     try {
-      if (!requireAuth()) return;
       const token = getToken();
+      if (!token) {
+        alert("אין התחברות, אנא התחבר מחדש");
+        return;
+      }
 
       const res = await fetch(API_BASE + "/api/backup/export", {
         headers: {
@@ -631,8 +666,9 @@ function setupBackupButton() {
 // =====================
 
 document.addEventListener("DOMContentLoaded", async () => {
-  if (!requireAuth()) return;
+  console.log("DOM loaded, init app.js");
 
+  // ה-UI תמיד נרשם
   setupNavigation();
   setupLogout();
   setupFinanceForm();
@@ -641,11 +677,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupLeadForm();
   setupBackupButton();
 
-  await Promise.all([
-    loadFinance(),
-    loadCalendarEvents(),
-    loadLeadHandlers(),
-    loadLeads()
-  ]);
-});
+  // אם אין טוקן – מפנים ללוגאין
+  if (!requireAuthSoft()) {
+    console.log("no token, redirecting to login");
+    window.location.href = "login.html";
+    return;
+  }
 
+  // טעינת נתונים מהשרת
+  try {
+    await Promise.all([
+      loadFinance(),
+      loadCalendarEvents(),
+      loadLeadHandlers(),
+      loadLeads()
+    ]);
+  } catch (err) {
+    console.error("Init data load error:", err);
+  }
+});
