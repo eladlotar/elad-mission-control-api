@@ -668,7 +668,7 @@ function setupBackupButton() {
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("DOM loaded, init app.js");
 
-  // אם אין טוקן → עפים ללוגאין
+  // אם אין טוקן → הולכים למסך התחברות
   if (!getToken()) {
     window.location.href = "login.html";
     return;
