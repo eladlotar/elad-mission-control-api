@@ -11,9 +11,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// הגשת קבצים סטטיים – index.html, login.html, app.js, style.css וכו'
-app.use(express.static(path.join(__dirname)));
+// ===== סטטי – מגיש index.html, app.js, style.css מהתיקייה של הקבצים =====
+const STATIC_DIR = __dirname; // כאן יושבים index.html, app.js, style.css וכו'
+app.use(express.static(STATIC_DIR));
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(STATIC_DIR, "index.html"));
+});
+
+// הדפסה לעזרה – רק ללוג
+console.log("STATIC_DIR is:", STATIC_DIR);
+
+// ===== חיבור ל-DB =====
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
@@ -22,7 +31,6 @@ const pool = new Pool({
 // =============== DB INIT – יצירת טבלאות אם לא קיימות ===============
 async function ensureTables() {
   try {
-    // טבלת פיננסים
     await pool.query(`
       CREATE TABLE IF NOT EXISTS finance (
         id SERIAL PRIMARY KEY,
@@ -34,7 +42,6 @@ async function ensureTables() {
       );
     `);
 
-    // טבלת יומן
     await pool.query(`
       CREATE TABLE IF NOT EXISTS calendar (
         id SERIAL PRIMARY KEY,
@@ -44,7 +51,6 @@ async function ensureTables() {
       );
     `);
 
-    // טבלת לידים
     await pool.query(`
       CREATE TABLE IF NOT EXISTS leads (
         id SERIAL PRIMARY KEY,
@@ -65,17 +71,13 @@ async function ensureTables() {
   }
 }
 ensureTables();
-// ===========================================================
 
 function handleError(res, error) {
   console.error("❌ Server Error:", error);
   res.status(500).json({ error: "Server failed", details: error.message });
 }
 
-// =====================
-// Authentication
-// =====================
-
+// ===================== Authentication =====================
 app.post(
   "/api/auth/login",
   body("email").isEmail().withMessage("Email format invalid"),
@@ -133,10 +135,7 @@ function adminGuard(req, res, next) {
   next();
 }
 
-// =====================
-// Users (לבחירת גורם מטפל בלידים)
-// =====================
-
+// ===================== Users =====================
 app.get("/api/users", authGuard, async (req, res) => {
   try {
     const result = await pool.query(
@@ -148,10 +147,7 @@ app.get("/api/users", authGuard, async (req, res) => {
   }
 });
 
-// =====================
-// Finance API
-// =====================
-
+// ===================== Finance API =====================
 app.post(
   "/api/finance",
   authGuard,
@@ -191,10 +187,7 @@ app.get("/api/finance", authGuard, async (req, res) => {
   }
 });
 
-// =====================
-// Calendar API
-// =====================
-
+// ===================== Calendar API =====================
 app.post(
   "/api/calendar",
   authGuard,
@@ -233,10 +226,7 @@ app.get("/api/calendar", authGuard, async (req, res) => {
   }
 });
 
-// =====================
-// Leads API
-// =====================
-
+// ===================== Leads API =====================
 const leadStatuses = [
   "לא ענה פעם 1",
   "לא ענה פעם 2",
@@ -372,10 +362,7 @@ app.delete("/api/leads/:id", authGuard, async (req, res) => {
   }
 });
 
-// =====================
-// Backup export (JSON רך)
-// =====================
-
+// ===================== Backup export (JSON רך) =====================
 app.get("/api/backup/export", authGuard, adminGuard, async (req, res) => {
   try {
     const [leadsRes, financeRes, calendarRes] = await Promise.all([
@@ -402,15 +389,7 @@ app.get("/api/backup/export", authGuard, adminGuard, async (req, res) => {
   }
 });
 
-// ברירת מחדל – לשלוח את index.html אם מגיעים לנתיב שלא מתחיל ב-/api
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
-// =====================
-// Server
-// =====================
-
+// ===================== Server =====================
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log("CRM API running on", PORT);
