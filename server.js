@@ -11,15 +11,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ===== סטטי – מגיש index.html, app.js, style.css מהתיקייה של הקבצים =====
-const STATIC_DIR = __dirname; // כאן יושבים index.html, app.js, style.css וכו'
+// ===== סטטי – מגיש index.html, app.js, style.css מתוך public =====
+const STATIC_DIR = path.join(__dirname, "public"); // כאן יושבים index.html וכו'
 app.use(express.static(STATIC_DIR));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(STATIC_DIR, "index.html"));
 });
 
-// הדפסה לעזרה – רק ללוג
 console.log("STATIC_DIR is:", STATIC_DIR);
 
 // ===== חיבור ל-DB =====
