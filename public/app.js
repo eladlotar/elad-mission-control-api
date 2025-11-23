@@ -1,3 +1,5 @@
+// public/app.js
+
 const API_BASE = "https://elad-mission-control-api.onrender.com";
 
 // ===== Auth helpers =====
@@ -144,7 +146,12 @@ async function loadFinance() {
     renderFinance();
   } catch (err) {
     console.error(err);
-    alert("שגיאה בטעינת נתונים פיננסיים: " + err.message);
+    if (err.message.includes("אין התחברות")) {
+      alert(err.message);
+      window.location.href = "login.html";
+    } else {
+      alert("שגיאה בטעינת נתונים פיננסיים: " + err.message);
+    }
   }
 }
 
@@ -264,11 +271,15 @@ async function loadCalendarEvents() {
   try {
     const data = await apiFetch("/api/calendar");
     calendarEvents = data || [];
+    renderCalendar();
   } catch (err) {
     console.error(err);
-    alert("שגיאה בטעינת היומן: " + err.message);
+    if (err.message.includes("אין התחברות")) {
+      // כבר נטפל בזה ב-loadFinance הראשון
+    } else {
+      alert("שגיאה בטעינת היומן: " + err.message);
+    }
   }
-  renderCalendar();
 }
 
 function renderCalendar() {
@@ -619,6 +630,7 @@ function setupBackupButton() {
       const token = getToken();
       if (!token) {
         alert("אין התחברות, אנא התחבר מחדש");
+        window.location.href = "login.html";
         return;
       }
 
@@ -657,6 +669,12 @@ function setupBackupButton() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("DOM loaded, init app.js");
+
+  // אם אין טוקן → עפים ללוגאין
+  if (!getToken()) {
+    window.location.href = "login.html";
+    return;
+  }
 
   setupNavigation();
   setupLogout();
