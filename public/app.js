@@ -6,11 +6,6 @@ function getToken() {
   return localStorage.getItem("token");
 }
 
-function requireAuthSoft() {
-  const token = getToken();
-  return !!token;
-}
-
 async function apiFetch(path, options = {}) {
   const token = getToken();
   if (!token) {
@@ -54,14 +49,10 @@ async function apiFetch(path, options = {}) {
 // =====================
 
 function setupNavigation() {
-  console.log("setupNavigation start");
   const navItems = document.querySelectorAll(".nav-item");
   const sections = document.querySelectorAll(".section");
   const pageTitle = document.querySelector(".page-title");
   const pageSubtitle = document.querySelector(".page-subtitle");
-
-  console.log("navItems found:", navItems.length);
-  console.log("sections found:", sections.length);
 
   const titles = {
     dashboard: {
@@ -109,7 +100,6 @@ function setupNavigation() {
   navItems.forEach((btn) => {
     btn.addEventListener("click", () => {
       const sectionId = btn.dataset.section;
-      console.log("nav click:", sectionId);
 
       navItems.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
@@ -274,11 +264,11 @@ async function loadCalendarEvents() {
   try {
     const data = await apiFetch("/api/calendar");
     calendarEvents = data || [];
-    renderCalendar();
   } catch (err) {
     console.error(err);
     alert("שגיאה בטעינת היומן: " + err.message);
   }
+  renderCalendar();
 }
 
 function renderCalendar() {
@@ -668,7 +658,6 @@ function setupBackupButton() {
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("DOM loaded, init app.js");
 
-  // ה-UI תמיד נרשם
   setupNavigation();
   setupLogout();
   setupFinanceForm();
@@ -677,14 +666,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupLeadForm();
   setupBackupButton();
 
-  // אם אין טוקן – מפנים ללוגאין
-  if (!requireAuthSoft()) {
-    console.log("no token, redirecting to login");
-    window.location.href = "login.html";
-    return;
-  }
-
-  // טעינת נתונים מהשרת
   try {
     await Promise.all([
       loadFinance(),
