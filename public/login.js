@@ -4,15 +4,6 @@ const API_BASE = "https://elad-mission-control-api.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
-
-  // אם כבר יש טוקן – להיכנס ישר
-  const existingToken = localStorage.getItem("token");
-  const existingUser = localStorage.getItem("crmUser");
-  if (existingToken && existingUser) {
-    window.location.href = "index.html";
-    return;
-  }
-
   if (!loginForm) {
     console.error("loginForm not found");
     return;
@@ -42,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // ניסיון ראשון: /api/login
       let res = await fetch(API_BASE + "/api/login", payload);
       if (res.status === 404) {
-        // אם הראוט הזה לא קיים – עוברים ל-/api/auth/login
+        // אם אין /api/login – נסה /api/auth/login
         res = await fetch(API_BASE + "/api/auth/login", payload);
       }
 
