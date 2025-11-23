@@ -5,7 +5,7 @@ const API_BASE = "https://elad-mission-control-api.onrender.com";
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
 
-  // אם כבר יש טוקן – נכנסים ישר למערכת
+  // אם כבר יש טוקן – להיכנס ישר
   const existingToken = localStorage.getItem("token");
   const existingUser = localStorage.getItem("crmUser");
   if (existingToken && existingUser) {
@@ -33,11 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch(API_BASE + "/api/login", {
+      const payload = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
-      });
+      };
+
+      // ניסיון ראשון: /api/login
+      let res = await fetch(API_BASE + "/api/login", payload);
+      if (res.status === 404) {
+        // אם הראוט הזה לא קיים – עוברים ל-/api/auth/login
+        res = await fetch(API_BASE + "/api/auth/login", payload);
+      }
 
       let data;
       try {
@@ -53,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // תופס כל שם אפשרי של טוקן מהשרת
       const token = data.token || data.accessToken || data.jwt;
       if (!token) {
         alert("לא התקבל token מהשרת. בדוק את /api/login");
