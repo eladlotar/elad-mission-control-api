@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -9,6 +10,9 @@ const { body, validationResult } = require("express-validator");
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// הגשת קבצים סטטיים – index.html, login.html, app.js, style.css וכו'
+app.use(express.static(path.join(__dirname)));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -396,6 +400,11 @@ app.get("/api/backup/export", authGuard, adminGuard, async (req, res) => {
   } catch (err) {
     handleError(res, err);
   }
+});
+
+// ברירת מחדל – לשלוח את index.html אם מגיעים לנתיב שלא מתחיל ב-/api
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // =====================
